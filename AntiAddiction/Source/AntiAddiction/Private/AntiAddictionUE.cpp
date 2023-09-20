@@ -13,16 +13,21 @@
 AntiAddictionUE::FCallBack AntiAddictionUE::OnCallBack;
 
 
+void AntiAddictionUE::SetTestEnvironment(bool Enable)
+{
+	AAUImpl::Get()->SetTestEnv(Enable);
+}
+
 void AntiAddictionUE::Init(const FAAUConfig& Config) {
 	AAUImpl::Get()->Init(Config);
 }
 
-void AntiAddictionUE::Startup(const FString& UserID) {
+void AntiAddictionUE::Startup(const FString& UserID, bool bIsTapUser) {
 	if (UserID.IsEmpty()) {
 		TUDebuger::ErrorLog("AntiAddiction UserID is Empty");
 		return;
 	}
-	AAUImpl::Get()->Startup(UserID);
+	AAUImpl::Get()->Startup(UserID, bIsTapUser);
 }
 
 void AntiAddictionUE::Exit() {

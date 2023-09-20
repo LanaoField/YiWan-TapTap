@@ -1,0 +1,31 @@
+{
+	"FileVersion": 3,
+	"Version": 32200001,
+	"VersionName": "3.22.0",
+	"FriendlyName": "TapMoment",
+	"Description": "TapTap Moment",
+	"Category": "TapTap",
+	"CreatedBy": "TapTap Develop Service",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"EnabledByDefault": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TapMoment",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "TapCommon",
+			"Enabled": true
+		}
+	]
+}

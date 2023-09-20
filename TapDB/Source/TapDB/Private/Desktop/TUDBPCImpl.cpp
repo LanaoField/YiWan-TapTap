@@ -16,12 +16,12 @@ void TUDBPCImpl::Init(FTUDBConfig InitConfig) {
 
 	SendDeviceLogin();
 
-	// // 上次时长没有发送成功，再次发送
-	// double PlayTime = TUDataStorage<FTUDBStorage>::LoadNumber(FTUDBStorage::TapDBPlayTime);
-	// if (PlayTime > 0) {
-	// 	SendPlayTime(PlayTime);
-	// 	TUDataStorage<FTUDBStorage>::Remove(FTUDBStorage::TapDBPlayTime);
-	// }
+	// 上次时长没有发送成功，再次发送
+	double PlayTime = TUDataStorage<FTUDBStorage>::LoadNumber(FTUDBStorage::TapDBPlayTime);
+	if (PlayTime > 0) {
+		SendPlayTime(PlayTime);
+		TUDataStorage<FTUDBStorage>::Remove(FTUDBStorage::TapDBPlayTime);
+	}
 }
 
 void TUDBPCImpl::SetUserWithLoginType(const FString& UserId, const FString& LoginType) {
@@ -216,21 +216,22 @@ void TUDBPCImpl::RegisterCoreDelegate() {
 		StartTime = FDateTime::Now();
 	});
 
-	// FCoreDelegates::ApplicationWillTerminateDelegate.AddLambda([=]() {
-	// 	if (!StartTime.IsValid()) {
-	// 		return;
-	// 	}
-	// 	FDateTime Now = FDateTime::Now();
-	// 	// 先把游戏事件缓存到本地，然后发送给服务端，如果发送成功，那么删除，不然下次激活的时候发送
-	// 	auto PlayTime = (Now - *StartTime.Get()).GetTotalSeconds();
-	// 	if (PlayTime > 0) {
-	// 		// 如果网络请求数为0，说明前面的请求都发送成功了，直接发送时长就行了，如果不是，说明网络情况可能不好，留着下次启动的时候发送。
-	// 		// 以上情况并不是绝对，只是大概率的情况。
-	// 		if (TUDBNet::CacheCount == 0) {
-	// 			SendPlayTime(PlayTime);
-	// 		} else {
-	// 			TUDataStorage<FTUDBStorage>::SaveNumber(FTUDBStorage::TapDBPlayTime, PlayTime);
-	// 		}
-	// 	}
-	// });
+	FCoreDelegates::ApplicationWillTerminateDelegate.AddLambda([=]() {
+		TUDebuger::DisplayLog("tapdb-ApplicationWillTerminateDelegate");
+		FDateTime Now = FDateTime::Now();
+		// 先把游戏事件缓存到本地，然后发送给服务端，如果发送成功，那么删除，不然下次激活的时候发送
+		auto PlayTime = (Now - StartTime).GetTotalSeconds();
+		if (PlayTime > 2) { // 大于2秒在发，过短不发
+			// 如果网络请求数为0，说明前面的请求都发送成功了，直接发送时长就行了，如果不是，说明网络情况可能不好，留着下次启动的时候发送。
+			// 以上情况并不是绝对，只是大概率的情况。
+			if (TUDBNet::CacheCount == 0) {
+				TUDebuger::DisplayLog("tapdb-ApplicationWillTerminateDelegate-SendPlayTime");
+				SendPlayTime(PlayTime);
+			} else {
+				TUDataStorage<FTUDBStorage>::SaveNumber(FTUDBStorage::TapDBPlayTime, PlayTime);
+			}
+		} else {
+			TUDebuger::DisplayLog("tapdb-ApplicationWillTerminateDelegate-SendPlayTime: time short");
+		}
+	});
 }

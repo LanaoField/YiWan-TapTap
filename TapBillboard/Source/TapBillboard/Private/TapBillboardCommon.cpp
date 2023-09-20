@@ -16,6 +16,7 @@
 #include "TapCommon.h"
 #include "TUDebuger.h"
 #include "TUError.h"
+#include "TUHelper.h"
 #include "TUSettings.h"
 #include "Engine/Font.h"
 #include "Engine/FontFace.h"
@@ -188,7 +189,7 @@ void FTapBillboardCommon::GetBadgeDetails(const FTapBadgeDetailsResult& OnSucces
 	HttpRequest->SetVerb(TEXT("POST"));
 	
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	FString JsonString;
@@ -203,7 +204,6 @@ void FTapBillboardCommon::GetBadgeDetails(const FTapBadgeDetailsResult& OnSucces
 	
 	HttpRequest->OnProcessRequestComplete().BindRaw(this, &FTapBillboardCommon::NetGetBadgeDetailsCallback, OnSuccess, OnFailed);
 
-	TAP_LOG_REQUEST(HttpRequest);
 	if (HttpRequest->ProcessRequest())
 	{
 		CanGetBadgeSecond += 5.f * 60.f;
@@ -349,7 +349,7 @@ void FTapBillboardCommon::Rest_SubmitReadingRecord()
 	HttpRequest->SetVerb(TEXT("POST"));
 	
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	FString JsonString;
@@ -364,7 +364,6 @@ void FTapBillboardCommon::Rest_SubmitReadingRecord()
 
 	if (HttpRequest->ProcessRequest())
 	{
-		TAP_LOG_REQUEST(HttpRequest);
 		CachedBadgeDetails.show_red_dot = false;
 	}
 }
@@ -407,7 +406,7 @@ FString FTapBillboardCommon::GenerateSplashUrl(const TMap<FString, FString>& Dim
 					*GenerateTrackParams());
 }
 
-UTexture2DDynamic* FTapBillboardCommon::GetMarqueeIconTexture() const
+UTexture2D* FTapBillboardCommon::GetMarqueeIconTexture() const
 {
 	return MarqueeIconTexture;
 }
@@ -501,12 +500,11 @@ void FTapBillboardCommon::Rest_FetchMarqueeStyle(const FAnnouncementStyleDataRes
 	HttpRequest->SetVerb(TEXT("GET"));
 
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	HttpRequest->OnProcessRequestComplete().BindRaw(this, &FTapBillboardCommon::NetFetchMarqueeStyleCallback, OnSuccess, OnFailed);
 
-	TAP_LOG_REQUEST(HttpRequest);
 	if (!HttpRequest->ProcessRequest())
 	{
 		OnFailed.ExecuteIfBound(FTUError(-1, TEXT("Net error")));
@@ -530,7 +528,7 @@ void FTapBillboardCommon::Rest_FetchUnreadAnnouncementsGeneralData(const TCHAR* 
 	HttpRequest->SetVerb(TEXT("POST"));
 
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	FString JsonString;
@@ -545,7 +543,6 @@ void FTapBillboardCommon::Rest_FetchUnreadAnnouncementsGeneralData(const TCHAR* 
 	
 	HttpRequest->OnProcessRequestComplete().BindRaw(this, &FTapBillboardCommon::NetFetchGeneralDataCallback, OnSuccess, OnFailed);
 
-	TAP_LOG_REQUEST(HttpRequest);
 	if (!HttpRequest->ProcessRequest())
 	{
 		OnFailed.ExecuteIfBound(FTUError(-1, TEXT("Net error")));
@@ -592,12 +589,11 @@ void FTapBillboardCommon::Rest_FetchAnnouncementsDetailData(const TArray<int64>&
 	HttpRequest->SetVerb(TEXT("GET"));
 
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	
 	HttpRequest->OnProcessRequestComplete().BindRaw(this, &FTapBillboardCommon::NetFetchDetailDataCallback, OnSuccess, OnFailed);
 
-	TAP_LOG_REQUEST(HttpRequest);
 	if (!HttpRequest->ProcessRequest())
 	{
 		OnFailed.ExecuteIfBound(FTUError(-1, TEXT("Net error")));
@@ -628,7 +624,7 @@ void FTapBillboardCommon::Rest_AnnouncementsMarkRead(const TArray<int64>& Ids, c
 	HttpRequest->SetVerb(TEXT("POST"));
 
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	
 	FString JsonString;
@@ -643,7 +639,6 @@ void FTapBillboardCommon::Rest_AnnouncementsMarkRead(const TArray<int64>& Ids, c
 	
 	HttpRequest->OnProcessRequestComplete().BindRaw(this, &FTapBillboardCommon::NetMarkReadCallback, OnSuccess, OnFailed);
 
-	TAP_LOG_REQUEST(HttpRequest);
 	if (!HttpRequest->ProcessRequest())
 	{
 		OnFailed.ExecuteIfBound(FTUError(-1, TEXT("Net error")));
@@ -670,7 +665,7 @@ void FTapBillboardCommon::Rest_SendTraceEvent(const TCHAR* Template, const TMap<
 	Params.Add(TEXT("md"), FPlatformMisc::GetCPUBrand());
 	Params.Add(TEXT("time"), FString::Printf(TEXT("%lld"), FDateTime::Now().ToUnixTimestamp() * 1000));
 	Params.Add(TEXT("t_log_id"), FGuid::NewGuid().ToString());
-	Params.Add(TEXT("sdk_vc"), TEXT(TapBillboard_VERSION_NUMBER));
+	Params.Add(TEXT("sdk_vc"), TapBillboard_UE_VERSION_NUMBER);
 #if PLATFORM_IOS || PLATFORM_ANDROID
 	EDeviceScreenOrientation Orientation = FPlatformMisc::GetDeviceOrientation();
 	FString OrientationStr = Orientation == EDeviceScreenOrientation::Portrait || Orientation == EDeviceScreenOrientation::PortraitUpsideDown ? TEXT("1") : TEXT("2");
@@ -700,7 +695,7 @@ void FTapBillboardCommon::Rest_SendTraceEvent(const TCHAR* Template, const TMap<
 	HttpRequest->SetVerb(TEXT("GET"));
 	
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
 	HttpRequest->ProcessRequest();
@@ -723,7 +718,7 @@ void FTapBillboardCommon::Test_UnmarkCurrentDevice()
 	HttpRequest->SetVerb(TEXT("POST"));
 
 	HttpRequest->SetHeader(TEXT("X-LC-Id"), FTUConfig::Get()->ClientID);
-	HttpRequest->SetHeader(TEXT("X-LC-Sign"), GetLCSyncString());
+	HttpRequest->SetHeader(TEXT("X-LC-Sign"), TUHelper::GetLCSign(FTUConfig::Get()->ClientToken));
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 	
 	FString JsonString;
@@ -734,7 +729,6 @@ void FTapBillboardCommon::Test_UnmarkCurrentDevice()
 	Writer->Close();
 	HttpRequest->SetContentAsString(JsonString);
 	
-	TAP_LOG_REQUEST(HttpRequest);
 	HttpRequest->ProcessRequest();
 }
 
@@ -810,7 +804,7 @@ FString FTapBillboardCommon::GenerateTrackParams() const
 	Params.Add(TEXT("SV"), TUDeviceInfo::GetOSVersion());
 	// Params.Add(TEXT("DEB"),TEXT("Google"));
 	// Params.Add(TEXT("DEM"), TEXT("Sdk-Google-platform"));
-	Params.Add(TEXT("SDKVC"), TEXT(TapBillboard_VERSION_NUMBER));
+	Params.Add(TEXT("SDKVC"), TapBillboard_UE_VERSION_NUMBER);
 	Params.Add(TEXT("DEVICEID"), TUDeviceInfo::GetDeviceId());
 	
 	int32 i = 0;
@@ -844,7 +838,7 @@ FString FTapBillboardCommon::GenerateXUA() const
 	Params.Add(TEXT("UID"), FGuid::NewGuid().ToString());
 	Params.Add(TEXT("PLT"), TUDeviceInfo::GetPlatform());
 	Params.Add(TEXT("OSV"), TUDeviceInfo::GetOSVersion());
-	Params.Add(TEXT("SDKVC"), TEXT(TapBillboard_VERSION_NUMBER));
+	Params.Add(TEXT("SDKVC"), TapBillboard_UE_VERSION_NUMBER);
 	Params.Add(TEXT("CID"), FTUConfig::Get()->ClientID);
 	
 	int32 i = 0;
@@ -875,7 +869,6 @@ void FTapBillboardCommon::InternalAudioOutputStateChangedCallback(bool bPlaying,
 
 void FTapBillboardCommon::NetGetBadgeDetailsCallback(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FTapBadgeDetailsResult OnSuccess, FTapFailed OnFailed)
 {
-	TAP_LOG_RESPONSE(HttpResponse);
 	if (TSharedPtr<FTUError> Error = ParseTapHttpResponse(HttpResponse, CachedBadgeDetails))
 	{
 		OnFailed.ExecuteIfBound(*Error);	
@@ -889,7 +882,6 @@ void FTapBillboardCommon::NetGetBadgeDetailsCallback(FHttpRequestPtr HttpRequest
 
 void FTapBillboardCommon::NetFetchMarqueeStyleCallback(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FAnnouncementStyleDataResult OnSuccess, FTapFailed OnFailed)
 {
-	TAP_LOG_RESPONSE(HttpResponse);
 	if (const TSharedPtr<FTUError> Error = ParseTapHttpResponse(HttpResponse, CachedMarqueeStyle))
 	{
 		OnFailed.ExecuteIfBound(*Error);	
@@ -902,7 +894,6 @@ void FTapBillboardCommon::NetFetchMarqueeStyleCallback(FHttpRequestPtr HttpReque
 
 void FTapBillboardCommon::NetFetchGeneralDataCallback(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FAnnouncementGeneralDataResult OnSuccess, FTapFailed OnFailed)
 {
-	TAP_LOG_RESPONSE(HttpResponse);
 	FAnnouncementGeneralDataList Wrapper;
 	if (TSharedPtr<FTUError> Error = ParseTapHttpResponse(HttpResponse, Wrapper))
 	{
@@ -916,7 +907,6 @@ void FTapBillboardCommon::NetFetchGeneralDataCallback(FHttpRequestPtr HttpReques
 
 void FTapBillboardCommon::NetFetchDetailDataCallback(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FAnnouncementDetailsDataResult OnSuccess, FTapFailed OnFailed)
 {
-	TAP_LOG_RESPONSE(HttpResponse);
 	FAnnouncementDetailDataList Wrapper;
 	if (TSharedPtr<FTUError> Error = ParseTapHttpResponse(HttpResponse, Wrapper))
 	{
@@ -930,7 +920,6 @@ void FTapBillboardCommon::NetFetchDetailDataCallback(FHttpRequestPtr HttpRequest
 
 void FTapBillboardCommon::NetMarkReadCallback(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded, FSimpleDelegate OnSuccess, FTapFailed OnFailed)
 {
-	TAP_LOG_RESPONSE(HttpResponse);
 	FAnnouncementMarkRead Wrapper;
 	if (TSharedPtr<FTUError> Error = ParseTapHttpResponse(HttpResponse, Wrapper))
 	{
@@ -1013,7 +1002,7 @@ void FTapBillboardCommon::InternalFetchMarqueeStyleCallback(const FAnnouncementS
 	}
 }
 
-void FTapBillboardCommon::InternalDownloadMarqueeImageCallback(UTexture2DDynamic* Texture)
+void FTapBillboardCommon::InternalDownloadMarqueeImageCallback(UTexture2D* Texture)
 {
 	MarqueeIconTexture = Texture;
 }

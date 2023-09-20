@@ -99,4 +99,20 @@ NSDictionary * IOSHelper::Convert(TSharedPtr<FJsonObject> JsonObject) {
 }
 
 
+NSData * IOSHelper::Convert(const TArray<uint8>& DataBuffer) {
+	return  [NSData dataWithBytes:DataBuffer.GetData() length:DataBuffer.Num()];
+}
+
+TArray<uint8> IOSHelper::Convert(NSData * data) {
+	TArray<uint8> OutBytes;
+	if (data != nil)
+	{
+		uint32 Size = data.length;
+		OutBytes.AddUninitialized(Size);
+		FPlatformMemory::Memcpy(OutBytes.GetData(), [data bytes], Size);
+	}
+	return MoveTemp(OutBytes);
+}
+
+
 

@@ -103,6 +103,7 @@ private:
 
 	bool IsRequestingAccessToken;
 	bool IsWaitRequestAccessToken;
+	bool bIsClosed = false;
 
 	TSharedPtr<TUWebAuthHelper> WebAuthHelper;
 

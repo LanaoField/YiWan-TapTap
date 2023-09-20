@@ -91,6 +91,20 @@ public:
 		return value;
 	}
 
+	template <typename StructType>
+	static TSharedPtr<StructType> LoadStructMatch(const FString& Key) {
+		const TSharedPtr<FJsonObject>* jsonObject;
+		if (!GetJsonObject()->TryGetObjectField(Key, jsonObject)) {
+			return nullptr;
+		}
+		TSharedPtr<StructType> value = MakeShareable(new StructType);
+		if (FJsonObjectConverter::JsonObjectToUStruct(jsonObject->ToSharedRef(), value.Get()))
+		{
+			return value;
+		}
+		return nullptr;
+	}
+
 	static void Remove(const FString& Key, bool needSaveLocal = true) {
 		GetJsonObject()->RemoveField(Key);
 		if (needSaveLocal) { SaveToFile(); }

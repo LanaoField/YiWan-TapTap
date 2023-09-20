@@ -2,15 +2,18 @@
 
 using UnrealBuildTool;
 using System.IO;
-
+using Tools.DotNETCommon;
 public class TapBootstrap : ModuleRules
 {
 	public TapBootstrap(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+        FileReference fileRef = new FileReference(Path.Combine(PluginDirectory, Name + ".uplugin"));
+        PluginInfo plugin = new PluginInfo(fileRef, PluginType.Project);	
+        PublicDefinitions.Add(Name + "_UE_VERSION_NUMBER=TEXT(\"" + plugin.Descriptor.Version + "\")");
+        PublicDefinitions.Add(Name + "_UE_VERSION=TEXT(\"" + plugin.Descriptor.VersionName + "\")");
 
-        PublicIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Public/Android")));
-        PublicIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Public/iOS")));
+
 		PrivateIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Private")));
 
         PublicDependencyModuleNames.AddRange(
@@ -23,11 +26,29 @@ public class TapBootstrap : ModuleRules
                 "JsonUtilities",
                 "TapCommon",
                 "TapLogin",
-                "LeanCloud",
                 "HTTP"
 				// ... add other public dependencies that you statically link with here ...
 			}
             );
+        
+        if (Target.Platform == UnrealTargetPlatform.IOS || Target.Platform == UnrealTargetPlatform.Android)
+        {
+            PublicDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "LeanCloudMobile"
+                }
+            );
+        }
+        else
+        {
+            PublicDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "LeanCloud"
+                }
+            );
+        }
 
 
         PrivateDependencyModuleNames.AddRange(
@@ -59,7 +80,7 @@ public class TapBootstrap : ModuleRules
                 )
             );
             PrivateIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Private/IOS")));
-
+            PublicIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Public/iOS")));
         }
 
         if (Target.Platform == UnrealTargetPlatform.Android)
@@ -75,7 +96,7 @@ public class TapBootstrap : ModuleRules
                 Path.Combine(ModuleDirectory, "TapBootstrap_Android_UPL.xml")
             );
             PrivateIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Private/Android")));
-
+            PublicIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Public/Android")));
         }
 
     }

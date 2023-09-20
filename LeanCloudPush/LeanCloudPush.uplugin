@@ -19,18 +19,17 @@
 		{
 			"Name": "LeanCloudPush",
 			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen"
+			"LoadingPhase": "PreLoadingScreen",
+			"WhitelistPlatforms": [
+				"IOS",
+				"Android"
+			]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "LeanCloud",
 			"Enabled": true
-		},
-		{
-			"Name": "AndroidX",
-			"Enabled": true,
-			"WhitelistPlatforms": ["Android"]
 		}
 	]
 }

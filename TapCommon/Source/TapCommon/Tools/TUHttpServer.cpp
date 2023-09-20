@@ -4,6 +4,7 @@
 #include "TUCrypto.h"
 #include "TUDebuger.h"
 #include "TUHelper.h"
+#include "TUType.h"
 TSharedPtr<TUHttpServer> TUHttpServer::InstancePtr = nullptr;
 
 void PrintServerRequest(const FHttpServerRequest& Request) {
@@ -59,7 +60,12 @@ FString TUHttpServer::RegisterNewRoute(const FString& Path,
 		[=](const FHttpServerRequest& Request, const FHttpResultCallback& OnComplete)
 	{
 		PrintServerRequest(Request);
-		return CallBack(Request, OnComplete);
+			if (CallBack)
+			{
+				return CallBack(Request, OnComplete);
+			}
+			UE_LOG(LogTap, Warning, TEXT("RegisterNewRoute, Handle Http, Invalid Callback."));
+			return false;
 	});
 	if (!Handle.IsValid()) {
 		TUDebuger::ErrorLog(FString::Printf(TEXT("unable bind route: %s"), *Path));

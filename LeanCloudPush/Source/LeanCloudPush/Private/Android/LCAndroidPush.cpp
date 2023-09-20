@@ -47,6 +47,30 @@ FString FLCAndroidPush::GetDeviceName() {
 	return JNI.GetFString(Name);
 }
 
+FString FLCAndroidPush::GetInstallationObjectID()
+{
+	LCJNI::JNI JNI;
+	auto Class = JNI.FindClass(LCMixPushUE);
+	auto Name = JNI.CallStaticObjectMethod(Class, "getInstallationObjectID", "()Ljava/lang/String;");
+	return JNI.GetFString(Name);
+}
+
+FString FLCAndroidPush::GetInstallationInstallationId()
+{
+	LCJNI::JNI JNI;
+	auto Class = JNI.FindClass(LCMixPushUE);
+	auto Name = JNI.CallStaticObjectMethod(Class, "getInstallationInstallationId", "()Ljava/lang/String;");
+	return JNI.GetFString(Name);
+}
+
+FString FLCAndroidPush::GetInstallationRegistrationId()
+{
+	LCJNI::JNI JNI;
+	auto Class = JNI.FindClass(LCMixPushUE);
+	auto Name = JNI.CallStaticObjectMethod(Class, "getInstallationRegistrationId", "()Ljava/lang/String;");
+	return JNI.GetFString(Name);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -111,15 +111,6 @@
         <addPermission android:name="com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE"/>
         <addPermission android:name="com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE"/>
         
-<!--        <addElements tag="$">-->
-<!--            <queries>-->
-<!--                &lt;!&ndash;华为&ndash;&gt;-->
-<!--                <intent>-->
-<!--                    <action android:name="com.huawei.hms.core.aidlservice" />-->
-<!--                </intent>-->
-<!--            </queries>-->
-<!--        </addElements>-->
-        
         <addElements tag="application">
             <!--华为-->
             <service
@@ -194,7 +185,7 @@
             </receiver>
 
             <!--魅族-->
-            <receiver android:name="cn.leancloud.LCFlymePushMessageReceiver">
+            <receiver android:name="cn.leancloud.LCFlymePushMessageReceiver" android:exported="false">
                 <intent-filter>
                     <!-- 接收push消息 -->
                     <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
@@ -219,7 +210,7 @@
                     android:screenOrientation="portrait"
                     android:theme="@android:style/Theme.Translucent.NoTitleBar" /> <!-- push应用定义消息receiver声明 -->
 
-            <receiver android:name="com.lc.VIVOPushMessageReceiver">
+            <receiver android:name="com.lc.VIVOPushMessageReceiver" android:exported="false">
                 <intent-filter>
                     <!-- 接收push消息 -->
                     <action android:name="com.vivo.pushclient.action.RECEIVE" />
@@ -235,14 +226,14 @@
             <!--oppo-->
             <service
                     android:name="com.heytap.msp.push.service.CompatibleDataMessageCallbackService"
-                    android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">
+                    android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE" android:exported="false">
                 <intent-filter>
                     <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE"/>
                 </intent-filter>
             </service> <!-- 兼容Q以下版本 -->
             <service
                     android:name="com.heytap.msp.push.service.DataMessageCallbackService"
-                    android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE">
+                    android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE" android:exported="false">
                 <intent-filter>
                     <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>
                     <action android:name="com.heytap.msp.push.RECEIVE_MCS_MESSAGE"/>
@@ -263,36 +254,11 @@
             </if>
         </loopElements>
 
-        <!-- Add intents -->
-<!--        <loopElements tag="activity">-->
-<!--            <setStringFromAttribute result="activityName" tag="$" name="android:name" />-->
-<!--            <setBoolIsEqual result="bGameActivity" arg1="$S(activityName)" arg2="com.epicgames.ue4.GameActivity" />-->
-<!--            <if condition="bGameActivity">-->
-<!--                <true>-->
-<!--                    &lt;!&ndash; Check for existing intent filter &ndash;&gt;-->
-<!--                    <setBool result="bHasIntentFilter" value="false" />-->
-<!--                    <loopElements tag="intent-filter">-->
-<!--                        <setBool result="bHasIntentFilter" value="true" />-->
-<!--                    </loopElements>-->
+        <addElements tag="manifest">
+            <!--去掉华为中的敏感权限，是华为更新用的，推送应该用不到-->
+            <uses-permission xmlns:tools="http://schemas.android.com/tools" android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove"/>
+        </addElements>
 
-<!--                    &lt;!&ndash; If no intent filter found, add a new one &ndash;&gt;-->
-<!--                    <if condition="bHasIntentFilter">-->
-<!--                        <false>-->
-<!--                            <setElement result="newIntentFilter" value="intent-filter" />-->
-<!--                            <addElement tag="$" name="newIntentFilter" />-->
-<!--                        </false>-->
-<!--                    </if>-->
-<!--                    <addElements tag="intent-filter">-->
-<!--                        &lt;!&ndash;华为&ndash;&gt;-->
-<!--                        <action android:name="android.intent.action.VIEW" />-->
-<!--                        <category android:name="android.intent.category.DEFAULT" />-->
-<!--                        <data android:scheme="lcpushscheme" android:host="cn.leancloud.push" android:path="/notify_detail"/>-->
-<!--                    </addElements>-->
-<!--                    -->
-<!--                    -->
-<!--                </true>-->
-<!--            </if>-->
-<!--        </loopElements>-->
     </androidManifestUpdates>
 
     <gameActivityImportAdditions>

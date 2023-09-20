@@ -24,7 +24,6 @@ bool TUDebuger::IsTest = false;
 TMap<FString, FString> TUDebuger::ReplaceHosts;
 
 void TUDebuger::AddReplacedHostPair(const FString& OriginHost, const FString& ReplacedHost) {
-	ReplaceHosts.Add(OriginHost, ReplacedHost);
 	TUDebuger::DisplayLog(FString::Printf(TEXT("原始地址：%s， 替换地址：%s"), *OriginHost, *ReplacedHost));
 #if PLATFORM_IOS
 	NSString *nsOriginHost = IOSHelper::Convert(OriginHost);
@@ -47,12 +46,13 @@ void TUDebuger::AddReplacedHostPair(const FString& OriginHost, const FString& Re
 			env->DeleteLocalRef(jReplacedHost);
 		}
 	}
-	env->DeleteLocalRef(jSDKUnreal4Class);   
+	env->DeleteLocalRef(jSDKUnreal4Class);
+#else
+	ReplaceHosts.Add(OriginHost, ReplacedHost);
 #endif
 }
 
 void TUDebuger::RemoveReplacedHostPair(const FString& OriginHost) {
-	ReplaceHosts.Remove(OriginHost);
 #if PLATFORM_IOS
 	NSString *nsOriginHost = IOSHelper::Convert(OriginHost);
 	[[TDSHostReplaceUtil shareInstance] clearReplacedHostPair:nsOriginHost];
@@ -72,12 +72,12 @@ void TUDebuger::RemoveReplacedHostPair(const FString& OriginHost) {
 		}
 	}
 	env->DeleteLocalRef(jSDKUnreal4Class);   
-
+#else
+	ReplaceHosts.Remove(OriginHost);
 #endif
 }
 
 void TUDebuger::ClearAllReplacedHostPairs() {
-	ReplaceHosts.Empty();
 #if PLATFORM_IOS
 	[[TDSHostReplaceUtil shareInstance] clear];
 #elif PLATFORM_ANDROID
@@ -94,7 +94,8 @@ void TUDebuger::ClearAllReplacedHostPairs() {
 		}
 	}
 	env->DeleteLocalRef(jSDKUnreal4Class);
-
+#else
+	ReplaceHosts.Empty();
 #endif
 }
 

@@ -74,11 +74,11 @@ public:
 	}
 
 	
-	static TSharedPtr<FJsonObject> GetJsonObject(const FString& JsonString)
+	static TSharedPtr<FJsonObject> GetJsonObject(const FString& JsonString, FJsonSerializer::EFlags Flags = FJsonSerializer::EFlags::None)
 	{
 		TSharedPtr<FJsonObject> JsonObject;
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
-		if (FJsonSerializer::Deserialize(Reader, JsonObject))
+		if (FJsonSerializer::Deserialize(Reader, JsonObject, Flags))
 		{
 			return JsonObject;
 		} else
@@ -96,9 +96,9 @@ public:
 	}
 
 	template <typename UStructType>
-	static TSharedPtr<FJsonObject> GetJsonObject(const UStructType& value)
+	static TSharedPtr<FJsonObject> GetJsonObject(const UStructType& value, const FJsonObjectConverter::CustomExportCallback* ExportCb = nullptr)
 	{
-		TSharedPtr<FJsonObject> JsonObject = FJsonObjectConverter::UStructToJsonObject(value);
+		TSharedPtr<FJsonObject> JsonObject = FJsonObjectConverter::UStructToJsonObject(value, 0, 0, ExportCb);
 		return JsonObject;
 	}
 
@@ -131,6 +131,22 @@ public:
 		TArray<UStructType> Results;
 		FJsonObjectConverter::JsonArrayStringToUStruct(JsonString, &Results, 0, 0);
 		return Results;
+	}
+
+	// Deal with the precision loss problem during the int64 conversion process in the structure, use it in the binding @see FJsonObjectConverter::CustomExportCallback
+	static TSharedPtr<FJsonValue> NumberAsString(FProperty* Property, const void* Value)
+	{
+		if (FNumericProperty *NumericProperty = CastField<FNumericProperty>(Property))
+		{
+			if (NumericProperty->GetIntPropertyEnum() == nullptr)
+			{
+				if (NumericProperty->IsInteger())
+				{
+					return MakeShared<FJsonValueNumberString>(FString::Printf(TEXT("%lld"), NumericProperty->GetSignedIntPropertyValue(Value)));
+				}
+			}
+		}
+		return nullptr;
 	}
 };
 

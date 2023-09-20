@@ -5,6 +5,7 @@ class TULoginRegionConfig
 public:
 	virtual ~TULoginRegionConfig() = default;
 	virtual FString WebHost() = 0;
+	virtual FString TokenHost() = 0;
 	virtual FString ApiHost() = 0;
 
 	FString CodeUrl();

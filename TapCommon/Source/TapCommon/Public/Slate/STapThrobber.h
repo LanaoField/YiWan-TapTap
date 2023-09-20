@@ -20,6 +20,7 @@ public:
 	: _HasThrobber(true)
 	, _Content(FText::GetEmpty())
 	, _TimeInterval(0.f)
+	, _bBlock(false)
 	{}
 
 	/** 是否有旋转等待指示器 */
@@ -31,6 +32,9 @@ public:
 	/** 自动销毁时间 */
 	SLATE_ARGUMENT( float, TimeInterval )
 
+	/** 阻挡点击 */
+	SLATE_ARGUMENT( bool, bBlock)
+	
 	SLATE_EVENT(FOnTapThrobberRemoveSelf, OnRemoveSelf)
 	
 	SLATE_END_ARGS()

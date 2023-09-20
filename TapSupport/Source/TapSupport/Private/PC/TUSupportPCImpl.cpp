@@ -4,6 +4,7 @@
 #include "TUDebuger.h"
 #include "TUHelper.h"
 #include "TUJsonHelper.h"
+#include "TULanguage.h"
 #include "TUSettings.h"
 #include "TUSupportNet.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
@@ -111,6 +112,12 @@ FString TUSupportPCImpl::GetSupportWebUrl(const FString& Path, TSharedPtr<FJsonO
 		Url = Url / Path;
 	}
 
+	Url += TEXT("?");
+	
+	FString LangStr = TULanguage::GetLanguageString();
+	LangStr.ReplaceCharInline(TEXT('_'), TEXT('-'), ESearchCase::CaseSensitive);
+	Url += (TEXT("lang=") + LangStr);
+	
 	FString Key;
 	switch (LoginType) {
 	case ESupportLoginType::Anonymous: 

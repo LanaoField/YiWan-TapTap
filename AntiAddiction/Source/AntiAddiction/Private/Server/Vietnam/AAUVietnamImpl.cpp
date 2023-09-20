@@ -39,7 +39,7 @@ void AAUVietnamImpl::LeaveGame() {
 	Server->LeaveGame();
 }
 
-void AAUVietnamImpl::Startup(const FString& UserID) {
+void AAUVietnamImpl::Startup(const FString& UserID, bool bIsTapUser) {
 	CurrentUserID = UserID;
 	IsFirstRealNameSuccess = false;
 	TSharedPtr<FAAUUser> LoginUser = TUDataStorage<FAAUStorage>::LoadStruct<FAAUUser>(FAAUStorage::VienamHasLoginedUser + UserID);
@@ -232,6 +232,6 @@ void AAUVietnamImpl::TryAgainLogin(const FString& ErrMsg) {
 	auto Widget = UAAUMobileTipWidget::ShowUI();
 	Widget->SetContent(Msg, "", "Retry");
 	Widget->ComformBlock = [=]() {
-		Startup(CurrentUserID);
+		Startup(CurrentUserID, false);
 	};
 }

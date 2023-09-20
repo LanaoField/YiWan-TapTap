@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "TapWidget.h"
 #include "TapWebBrowser.generated.h"
 
 struct FWebNavigationRequest;
@@ -19,7 +19,7 @@ DECLARE_DELEGATE(FOnCloseWebBrowserClicked);
  * 
  */
 UCLASS()
-class TAPCOMMON_API UTapWebBrowser : public UUserWidget
+class TAPCOMMON_API UTapWebBrowser : public UTapWidget
 {
 	GENERATED_BODY()
 public:

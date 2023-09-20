@@ -13,7 +13,7 @@ void TUDBNet::SendEvent(TSharedPtr<FJsonObject> Paras, TFunction<void()> Success
 }
 
 TUDBNet::~TUDBNet() {
-	TUDebuger::DisplayLog("request is release");
+	// TUDebuger::DisplayLog("request is release");
 }
 
 void TUDBNet::SendEvent(const FString& Url, TSharedPtr<FJsonObject> Paras, TFunction<void()> SuccessBlock,
@@ -40,19 +40,6 @@ void TUDBNet::SendEvent(const FString& Url, TSharedPtr<FJsonObject> Paras, TFunc
 		{
 			if (Response->state == TUHttpResponse::success && SuccessBlock) {
 				SuccessBlock();
-			} else if (Response->httpCode == 302 || Response->httpCode == 307) {
-				FString Location;
-				FString Prefix = "Location: ";
-				for (auto Header : Response->headers) {
-					if (Header.StartsWith(Prefix)) {
-						Location = Header.LeftChop(Prefix.Len());
-						break;
-					}
-				}
-				if (!Location.IsEmpty()) {
-					PerformRequest(LastRequest);
-					return;
-				}
 			} else if (Response->state == TUHttpResponse::clientError && FailBlock) {
 				FailBlock();
 			}
@@ -63,7 +50,7 @@ void TUDBNet::SendEvent(const FString& Url, TSharedPtr<FJsonObject> Paras, TFunc
 			
 			if (!RequestQueue.IsEmpty())
 			{
-				PerformRequest(LastRequest);
+				PerformRequest(*RequestQueue.Peek());
 			}
 		} else
 		{

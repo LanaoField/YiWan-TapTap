@@ -32,9 +32,3 @@ ETapBillboardUrlType GetBillboardUrlType(const FString& Url)
 	return ETapBillboardUrlType::LaunchInnerBrowser;
 }
 
-FString GetLCSyncString()
-{
-	const int64 Ticks = FDateTime::UtcNow().ToUnixTimestamp() * 1000;
-	const FString TimeStr = FString::Printf(TEXT("%010lld"), Ticks);
-	return FMD5::HashAnsiString(*(TimeStr + FTUConfig::Get()->ClientToken)) + TEXT(",") + TimeStr;
-}

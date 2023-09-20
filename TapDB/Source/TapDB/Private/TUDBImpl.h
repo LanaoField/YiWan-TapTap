@@ -49,6 +49,9 @@ public:
 	// iOS 独有
 	virtual void AdvertiserIDCollectionEnabled(bool Enable);
 
+	// Android 独有
+	virtual void SetOAIDCert(const FString& Cert);
+
 	// 移动端 独有
 	virtual void EnableLog(bool Enable);
 

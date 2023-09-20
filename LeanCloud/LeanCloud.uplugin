@@ -13,12 +13,26 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
+	"EnabledByDefault": false,
 	"Installed": false,
 	"Modules": [
 		{
+			"Name": "LeanCloudMobile",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen",
+			"WhitelistPlatforms": [
+				"IOS",
+				"Android"
+			]
+		},
+		{
 			"Name": "LeanCloud",
 			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen"
+			"LoadingPhase": "PreLoadingScreen",
+			"BlacklistPlatforms": [
+				"IOS",
+				"Android"
+			]
 		}
 	]
 }

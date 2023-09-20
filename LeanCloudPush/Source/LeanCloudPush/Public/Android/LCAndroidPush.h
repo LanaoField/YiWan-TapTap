@@ -11,4 +11,8 @@ public:
 	static void RegisterXiaoMi(const FString& AppId, const FString& AppKey);
 
 	static FString GetDeviceName();
+
+	FString GetInstallationObjectID();
+	FString GetInstallationInstallationId();
+	FString GetInstallationRegistrationId();
 };

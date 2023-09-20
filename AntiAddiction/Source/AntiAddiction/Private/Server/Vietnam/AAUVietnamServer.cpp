@@ -194,6 +194,9 @@ void AAUVietnamServer::StartUploadTimer() {
 
 void AAUVietnamServer::StartTimeLimitTimer() {
 	TUSettings::GetGameInstance()->GetTimerManager().SetTimer(TimeLimitTimer, [=]() {
+		if (!CurrentUser.IsValid()) {
+			return;
+		}
 		if (CurrentUser->AgeLimit == EAAUAgeLimit::Adult) {
 			return;
 		}
@@ -233,6 +236,9 @@ void AAUVietnamServer::UpdateCostAndRemainTime() {
 
 void AAUVietnamServer::UploadTime(bool IsPure) {
 	// 如果是成年人不用上报及判断
+	if (!CurrentUser.IsValid()) {
+		return;
+	}
 	if (CurrentUser->AgeLimit == EAAUAgeLimit::Adult) {
 		return;
 	}

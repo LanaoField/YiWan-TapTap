@@ -17,11 +17,13 @@ public:
 	// 回调
 	static FCallBack OnCallBack;
 
+	static void SetTestEnvironment(bool Enable);
+
 	// 防沉迷初始化
 	static void Init(const FAAUConfig& Config);
 
 	// 启动防沉迷
-	static void Startup(const FString& UserID);
+	static void Startup(const FString& UserID, bool bIsTapUser = false);
 
 	// 防沉迷退出
 	static void Exit();

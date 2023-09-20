@@ -10,6 +10,8 @@ public:
 	
 	virtual void SetLanguage(ELanguageType LanguageType);
 
+	virtual void setDurationStatisticsEnabled(bool bEnable);
+
 private:
 	static TSharedPtr<TUCommonImpl> Instance;
 	

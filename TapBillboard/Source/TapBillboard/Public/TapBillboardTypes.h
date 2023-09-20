@@ -39,8 +39,6 @@ enum class ETapBillboardUrlType : uint8
 
 ETapBillboardUrlType GetBillboardUrlType(const FString& Url);
 
-FString GetLCSyncString();
-
 USTRUCT(BlueprintType)
 struct FBadgeDetails
 {
@@ -207,39 +205,5 @@ TSharedPtr<ErrorType> ParseTapHttpResponse(FHttpResponsePtr Response, StructType
 	return nullptr;
 }
 
-#if UE_BUILD_SHIPPING
-#if !defined(TAP_LOG_REQUEST)
-	#define TAP_LOG_REQUEST(HttpRequest)
-#endif
-#if !defined(TAP_LOG_RESPONSE)
-	#define TAP_LOG_RESPONSE(HttpResponse)
-#endif
-#else
-#if !defined(TAP_LOG_REQUEST)
-	#define TAP_LOG_REQUEST(HttpRequest) \
-		UE_LOG(LogTemp, Log, TEXT("----- %s -----"), ANSI_TO_TCHAR(__FUNCTION__)); \
-		UE_LOG(LogTemp, Log, TEXT("%s %s"), *HttpRequest->GetVerb(), *HttpRequest->GetURL()); \
-		for (const FString& Header : HttpRequest->GetAllHeaders()) \
-		{ \
-			UE_LOG(LogTemp, Log, TEXT("-H %s"), *Header); \
-		} \
-		if (HttpRequest->GetContentLength() > 0) \
-		{ \
-			FUTF8ToTCHAR Data(reinterpret_cast<const ANSICHAR*>(HttpRequest->GetContent().GetData()), HttpRequest->GetContent().Num()); \
-			UE_LOG(LogTemp, Log, TEXT("-d ‘%s’"), *FString(Data.Length(), Data.Get())); \
-		} \
-		UE_LOG(LogTemp, Log, TEXT(" "));
-#endif
-
-#if !defined(TAP_LOG_RESPONSE)
-	#define TAP_LOG_RESPONSE(HttpResponse) \
-		UE_LOG(LogTemp, Log, TEXT("***** %s *****"), ANSI_TO_TCHAR(__FUNCTION__)); \
-		if (HttpResponse) \
-		{ \
-			UE_LOG(LogTemp, Log, TEXT("%d ‘%s’"), HttpResponse->GetResponseCode(), *HttpResponse->GetContentAsString()); \
-		} \
-		UE_LOG(LogTemp, Log, TEXT(" "));
-#endif
-#endif
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCustomLinkClicked, const FString&/** Url */);
 DECLARE_DELEGATE_OneParam(FAudioOutputStateChanged, bool /** bPlaying */);

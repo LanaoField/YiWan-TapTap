@@ -10,6 +10,11 @@
 #include "Model/China/AAUChinaConfigModel.h"
 #include "AAUManualRealNameWidget.generated.h"
 
+enum class EManualRealNameTextBoxType : uint8
+{
+	Name,
+	Id
+};
 /**
  *  
  */
@@ -33,12 +38,14 @@ public:
 
 	void ShowError(const FString& ErrorMsg);
 
+	void SetFocusEditableTextBox(EManualRealNameTextBoxType BoxType);
+
 	void ChangeType(AAURealNameWordType _Type);
 
 protected:
-
+	virtual void NativeOnInitialized() override;
+	
 	virtual void NativeConstruct() override;
-
 
 	UFUNCTION()
 	void OnBackBtnClick();
@@ -49,12 +56,16 @@ protected:
 	UFUNCTION()
 	void OnSubmitBtnClick();
 
-
-private:
+	UFUNCTION()
+	void OnNameEditableTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+	
+	UFUNCTION()
+	void OnCardIdEditableTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+	
 	UPROPERTY(meta = (BindWidget))
 	UAAUBackViewWidget* BackView;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
 	UEditableTextBox* NameTF;
 
 	UPROPERTY(meta = (BindWidget))
@@ -71,7 +82,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UHorizontalBox* InputView;
-
 
 private:
 	

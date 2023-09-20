@@ -12,11 +12,11 @@
 #include "Components/TextBlock.h"
 #include "Engine/Font.h"
 
-void UTapMarqueeItem::UpdateItem(const FText& Content, UTexture2DDynamic* InIconTexture, float InStartupOffset, int64 Id, bool bMarkReadWhenFinished)
+void UTapMarqueeItem::UpdateItem(const FText& Content, UTexture2D* InIconTexture, float InStartupOffset, int64 Id, bool bMarkReadWhenFinished)
 {
 	if (InIconTexture)
 	{
-		Icon->SetBrushFromTextureDynamic(InIconTexture, true);		
+		Icon->SetBrushFromTexture(InIconTexture, true);		
 	}
 	else
 	{
@@ -79,8 +79,14 @@ void UTapMarqueeItem::NativeOnInitialized()
 	{
 		if (const UFont* Font = Interface->GetDownloadFont())
 		{
+#if ENGINE_MAJOR_VERSION > 4
+			FSlateFontInfo Info = ContentLabel->GetFont();
+			Info.FontObject = Font;
+			ContentLabel->SetFont(Info);
+#else
 			ContentLabel->Font.FontObject = Font;
 			ContentLabel->SetFont(ContentLabel->Font);
+#endif
 		}
 	}
 #if PLATFORM_IOS || PLATFORM_ANDROID
@@ -92,9 +98,9 @@ void UTapMarqueeItem::TimerFindIcon()
 {
 	if (FTapBillboardPtr Billboard = FTapBillboardModule::GetTapBillboardInterface())
 	{
-		if (UTexture2DDynamic* Tex = Billboard->GetMarqueeIconTexture())
+		if (UTexture2D* Tex = Billboard->GetMarqueeIconTexture())
 		{
-			Icon->SetBrushFromTextureDynamic(Tex);
+			Icon->SetBrushFromTexture(Tex);
 			if (UWorld* World = GetWorld())
 			{
 				World->GetTimerManager().ClearTimer(FindIconTimer);

@@ -104,6 +104,8 @@ public:
 
 	static FString CombinParameters(const TSharedPtr<FJsonObject>& parameters, bool isEncode = true);
 
+	static FString GetLCSign(const FString& ClientToken);
+
 #if PLATFORM_MAC || PLATFORM_WINDOWS
 	
 	static UTexture2D* GenerateQrCode(const FString& string);

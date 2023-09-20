@@ -12,6 +12,7 @@
 
 TSharedPtr<AAUImpl> AAUImpl::Instance = nullptr;
 FAAUConfig AAUImpl::Config;
+bool AAUImpl::bTestEnvEnable = false;
 FString AAUImpl::LocalTokenString = "standalone_anti_addiction_token";
 int AAUImpl::AdultRemainTime = 9999;
 
@@ -67,6 +68,7 @@ void AAUImpl::Init(const FAAUConfig& _Config) {
 		Instance = MakeShareable(new AAUChinaImpl);
 #endif
 		Instance->InitImpl(_Config);
+		Instance->SetTestEnv(bTestEnvEnable);
 	}
 	else if (Config.Region == EAAURegion::Vietnam) {
 		Instance = MakeShareable(new AAUVietnamImpl);
@@ -74,11 +76,16 @@ void AAUImpl::Init(const FAAUConfig& _Config) {
 	}
 }
 
+void AAUImpl::SetTestEnv(bool Enable)
+{
+	bTestEnvEnable = Enable;
+}
+
 void AAUImpl::InitImpl(const FAAUConfig& _Config) {
 	TUDebuger::ErrorLog("Unsupported");
 }
 
-void AAUImpl::Startup(const FString& UserID) {
+void AAUImpl::Startup(const FString& UserID, bool bIsTapUser) {
 	TUDebuger::ErrorLog("Unsupported");
 }
 

@@ -2,7 +2,7 @@
 
 using UnrealBuildTool;
 using System.IO;
-using System;
+using Tools.DotNETCommon;
 
 public class TapLogin : ModuleRules
 {
@@ -11,6 +11,12 @@ public class TapLogin : ModuleRules
 	{
 		
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		FileReference fileRef = new FileReference(Path.Combine(PluginDirectory, Name + ".uplugin"));
+		PluginInfo plugin = new PluginInfo(fileRef, PluginType.Project);	
+		PublicDefinitions.Add(Name + "_UE_VERSION_NUMBER=TEXT(\"" + plugin.Descriptor.Version + "\")");
+		PublicDefinitions.Add(Name + "_UE_VERSION=TEXT(\"" + plugin.Descriptor.VersionName + "\")");
+
 
 		PublicIncludePaths.AddRange(
 			new string[] {

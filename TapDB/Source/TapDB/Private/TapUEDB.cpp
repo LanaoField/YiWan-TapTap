@@ -117,6 +117,11 @@ void TapUEDB::AdvertiserIDCollectionEnabled(bool Enable) {
 	TUDBImpl::Get()->AdvertiserIDCollectionEnabled(Enable);
 }
 
+void TapUEDB::SetOAIDCert(const FString& Cert) {
+	JudgeIsInitialized
+	TUDBImpl::Get()->SetOAIDCert(Cert);
+}
+
 void TapUEDB::EnableLog(bool Enable) {
 	TUDBImpl::Get()->EnableLog(Enable);
 }

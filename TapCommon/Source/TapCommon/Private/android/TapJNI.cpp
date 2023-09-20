@@ -34,6 +34,9 @@ namespace TapJNI {
 	}
 
 	Class JNI::GetObjectClass(const Object& object) const {
+		if (!object) {
+			TUDebuger::ErrorLog(FString::Printf(TEXT("TapJNI GetObjectClass: object is null")));
+		}
 		jclass Class = Env->GetObjectClass(*object);
 		return MakeScopedJavaObject(Env, Class);
 	}
@@ -106,6 +109,12 @@ namespace TapJNI {
 			Env->SetObjectArrayElement(Arrays, i, *Temp);
 		}
 		return MakeScopedJavaObject(Env, (jobject)Arrays);
+	}
+
+	Object JNI::GetDataBytes(const TArray<uint8>& DataBytes) const {
+		auto array = Env->NewByteArray(DataBytes.Num());
+		Env->SetByteArrayRegion(array, 0, DataBytes.Num(), (int8_t *)DataBytes.GetData());
+		return MakeScopedJavaObject(Env, (jobject)array);
 	}
 
 	Object JNI::NewObject(const Class& Class, const char* CtorSig, ...) const {

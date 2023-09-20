@@ -12,19 +12,24 @@ AndroidBridge::AndroidBridge()
 
 AndroidBridge::~AndroidBridge()
 {
-    Init();
 }
 
 jobject AndroidBridge::GetJBridge()
 {
-    jobject jBridge = nullptr;
+    static jobject jBridge = nullptr;
+    if (jBridge != nullptr) {
+        return jBridge;
+    }
     JNIEnv *env = FAndroidApplication::GetJavaEnv();
     auto jUnrealClass = FAndroidApplication::FindJavaClass(TDS_BRIDGE_CLASS);
     if (jUnrealClass)
     {
         const char *strMethod = "getInstance";
         auto jMethod = env->GetStaticMethodID(jUnrealClass, strMethod, "()Lcom/tds/common/bridge/Bridge;");
-        jBridge = env->CallStaticObjectMethod(jUnrealClass, jMethod);
+        auto TempjBridge = env->CallStaticObjectMethod(jUnrealClass, jMethod);
+        jBridge = env->NewGlobalRef(TempjBridge);
+        env->DeleteLocalRef(TempjBridge);
+        env->DeleteLocalRef(jUnrealClass);
     }
     return jBridge;
 }
@@ -42,6 +47,7 @@ void AndroidBridge::Init()
             auto jActivity = FAndroidApplication::GetGameActivityThis();
             env->CallVoidMethod(GetJBridge(), jMethod, jActivity);
         }
+        env->DeleteLocalRef(jUnrealClass);
     }
 }
 
@@ -65,6 +71,9 @@ void AndroidBridge::Register(FString serviceClz, FString serviceImpl)
             env->CallVoidMethod(GetJBridge(), jRegisterMethod, jServiceClz, jServiceImpl);
         }
         env->DeleteLocalRef(jServiceImpl);
+        env->DeleteLocalRef(jServiceClz);
+        env->DeleteLocalRef(jServiceImplClz);
+        env->DeleteLocalRef(jUnrealClass);
     }
 }
 
@@ -82,6 +91,7 @@ void AndroidBridge::CallHandler(FString command)
             env->CallVoidMethod(GetJBridge(), jMethod, jCommand);
             env->DeleteLocalRef(jCommand);
         }
+        env->DeleteLocalRef(jUnrealClass);
     }
 }
 

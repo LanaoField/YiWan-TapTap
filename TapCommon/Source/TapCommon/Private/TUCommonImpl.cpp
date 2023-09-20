@@ -27,3 +27,7 @@ TSharedPtr<TUCommonImpl>& TUCommonImpl::Get() {
 void TUCommonImpl::SetLanguage(ELanguageType LanguageType) {
 	UnsupportedPlatformsLog
 }
+
+void TUCommonImpl::setDurationStatisticsEnabled(bool bEnable) {
+	UnsupportedPlatformsLog
+}

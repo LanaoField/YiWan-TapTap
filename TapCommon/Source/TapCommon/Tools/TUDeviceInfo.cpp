@@ -1,7 +1,21 @@
 #include "TUDeviceInfo.h"
 #include "SocketSubsystem.h"
 #include "TUCommonStorage.h"
-#include "HAL/PlatformSurvey.h"
+#include "TUType.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+#if PLATFORM_ANDROID
+#include "Android/AndroidApplication.h"
+#include "Android/AndroidJava.h"
+#include <jni.h>
+#endif
+
+
+static TAutoConsoleVariable<FString> CVarLoginId(
+	TEXT("Tap.LoginId"),
+	TEXT(""),
+	TEXT("Change Login-id, empty string means not change, and use the no-debug Login-id."),
+	ECVF_Default);
 
 FString TUDeviceInfo::GetCPU()
 {
@@ -53,6 +67,14 @@ int TUDeviceInfo::GetScreenHeight() {
 
 FString TUDeviceInfo::GetLoginId()
 {
+#if !UE_BUILD_SHIPPING
+	FString DebugId = CVarLoginId.GetValueOnGameThread();
+	if (!DebugId.IsEmpty())
+	{
+		UE_LOG(LogTap, VeryVerbose, TEXT("Get login id, use debug id: %s"), *DebugId);
+		return DebugId;
+	}
+#endif
 	return FPlatformMisc::GetLoginId();
 }
 
@@ -103,7 +125,7 @@ FString TUDeviceInfo::GetProjectName()
 
 FString TUDeviceInfo::GetDeviceId()
 {
-	return FPlatformMisc::GetDeviceId();
+	return GetLoginId();
 }
 
 FString TUDeviceInfo::GetIpv4()
@@ -156,26 +178,42 @@ FString TUDeviceInfo::GetIpv6()
 	return Ipv6;
 }
 
+bool TUDeviceInfo::IsSmartPhone()
+{
+#if PLATFORM_IOS
+	FString ProfileName = FPlatformMisc::GetDefaultDeviceProfileName();
+	return ProfileName.StartsWith(TEXT("iPhone"));
+#elif PLATFORM_ANDROID
+	JNIEnv *env = FAndroidApplication::GetJavaEnv();
+	auto TapCommonClass = FAndroidApplication::FindJavaClass("com/tds/TapCommonUE");
+	if (TapCommonClass)
+	{
+		const char *strMethod = "isPad";
+		auto jMethod = env->GetStaticMethodID(TapCommonClass, strMethod, "()Z");
+		if (jMethod)
+		{
+			return !env->CallStaticBooleanMethod(TapCommonClass, jMethod);
+		}
+	}
+	env->DeleteLocalRef(TapCommonClass);   
+#endif
+	return false;
+}
 
 void TUDeviceInfo::GetCountryAndLanguage(FString& Country, FString& Language) {
 	static FString G_Country;
 	static FString G_Language;
 	if (G_Language.IsEmpty() && G_Country.IsEmpty()) {
-		// #if PLATFORM_IOS || PLATFORM_MAC
-		// 		G_Country = FString([[NSLocale currentLocale] objectForKey:NSLocaleCountryCode]);
-		// 		G_Language = FString([[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]);
-		// #else
-		FHardwareSurveyResults OutResults;
-		FPlatformSurvey::GetSurveyResults(OutResults);
-		FString OSLanguage = FString(OutResults.OSLanguage);
+		
+		FString OSLanguageStr = UKismetSystemLibrary::GetDefaultLanguage();
 		TArray<FString> ResultArray;
-		OSLanguage.ParseIntoArray(ResultArray, TEXT("-"));
+		OSLanguageStr.ParseIntoArray(ResultArray, TEXT("-"));
 		if (ResultArray.Num() == 1) {
 			G_Language = ResultArray[0];
 		} else if (ResultArray.Num() > 1) {
 			G_Country = ResultArray.Last();
 			// ResultArray.RemoveAt(ResultArray.Num() -1);
-			G_Language = OSLanguage;
+			G_Language = OSLanguageStr;
 		}
 		// #endif
 	}

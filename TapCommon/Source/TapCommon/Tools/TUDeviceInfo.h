@@ -47,6 +47,8 @@ public:
 	static FString GetIpv4();
 
 	static FString GetIpv6();
+
+	static bool IsSmartPhone();
 	
 	static void GetCountryAndLanguage(FString& Country, FString& Language);
 };

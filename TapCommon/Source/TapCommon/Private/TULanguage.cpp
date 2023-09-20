@@ -56,8 +56,6 @@ FString TULanguage::GetLanguageString()
 	const ELanguageType Type = GetCurrentType();
 	switch (Type)
 	{
-	case ELanguageType::AUTO:
-		return TEXT("zh_CN");
 	case ELanguageType::ZH:
 		return TEXT("zh_CN");
 	case ELanguageType::EN:
@@ -74,7 +72,7 @@ FString TULanguage::GetLanguageString()
 		return TEXT("id_ID");
 	default:
 		ensure(false);
-		return TEXT("");
+		return TEXT("zh_CN");
 	}
 }
 
@@ -96,7 +94,15 @@ ELanguageType TULanguage::GetCurrentType() {
 }
 
 void TULanguage::SetCurrentType(ELanguageType Type) {
-	Get().CurrentType = Type;
+	TULanguage& Inst = Get();
+	ELanguageType OldType = Inst.CurrentType;
+	Inst.CurrentType = Type;
+	Inst.OnCurrentLanguageChanged.Broadcast(OldType, Type);
+}
+
+FOnCurrentLanguageChanged& TULanguage::OnLanguageChanged()
+{
+	return Get().OnCurrentLanguageChanged;
 }
 
 

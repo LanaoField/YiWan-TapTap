@@ -1,0 +1,39 @@
+{
+	"FileVersion": 3,
+	"Version": 32200001,
+	"VersionName": "3.22.0",
+	"FriendlyName": "TapConnect",
+	"Description": "TapTap Connect",
+	"Category": "TapTap",
+	"CreatedBy": "TapTap Develop Service",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"EnabledByDefault": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TapConnect",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "TapCommon",
+			"Enabled": true
+		},
+		{
+			"Name": "TapMoment",
+			"Enabled": true
+		},
+		{
+			"Name": "TapLogin",
+			"Enabled": true
+		}
+	]
+}

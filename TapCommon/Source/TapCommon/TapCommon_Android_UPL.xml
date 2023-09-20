@@ -8,88 +8,88 @@
     <!-- optional additions to proguard -->
     <proguardAdditions>
         <insert>
--keep public class com.tds.common.** {*;}
--keep public class com.tapsdk.** {*;}
--keep class com.tds.** {*;}
-            
-# proguard.cfg
+            -keep public class com.tds.common.** {*;}
+            -keep public class com.tapsdk.** {*;}
+            -keep class com.tds.** {*;}
 
--keepattributes Signature
--dontwarn com.jcraft.jzlib.**
--keep class com.jcraft.jzlib.**  { *;}
+            # proguard.cfg
 
--dontwarn sun.misc.**
--keep class sun.misc.** { *;}
+            -keepattributes Signature
+            -dontwarn com.jcraft.jzlib.**
+            -keep class com.jcraft.jzlib.** { *;}
 
--dontwarn com.alibaba.fastjson.**
--keep class com.alibaba.fastjson.** { *;}
+            -dontwarn sun.misc.**
+            -keep class sun.misc.** { *;}
 
--dontwarn org.ligboy.retrofit2.**
--keep class org.ligboy.retrofit2.** { *;}
+            -dontwarn com.alibaba.fastjson.**
+            -keep class com.alibaba.fastjson.** { *;}
 
--dontwarn io.reactivex.rxjava2.**
--keep class io.reactivex.rxjava2.** { *;}
+            -dontwarn org.ligboy.retrofit2.**
+            -keep class org.ligboy.retrofit2.** { *;}
 
--dontwarn sun.security.**
--keep class sun.security.** { *; }
+            -dontwarn io.reactivex.rxjava2.**
+            -keep class io.reactivex.rxjava2.** { *;}
 
--dontwarn com.google.**
--keep class com.google.** { *;}
+            -dontwarn sun.security.**
+            -keep class sun.security.** { *; }
 
--dontwarn com.avos.**
--keep class com.avos.** { *;}
+            -dontwarn com.google.**
+            -keep class com.google.** { *;}
 
--dontwarn cn.leancloud.**
--keep class cn.leancloud.** { *;}
+            -dontwarn com.avos.**
+            -keep class com.avos.** { *;}
 
--keep public class android.net.http.SslError
--keep public class android.webkit.WebViewClient
+            -dontwarn cn.leancloud.**
+            -keep class cn.leancloud.** { *;}
 
--dontwarn android.webkit.WebView
--dontwarn android.net.http.SslError
--dontwarn android.webkit.WebViewClient
+            -keep public class android.net.http.SslError
+            -keep public class android.webkit.WebViewClient
 
--dontwarn android.support.**
+            -dontwarn android.webkit.WebView
+            -dontwarn android.net.http.SslError
+            -dontwarn android.webkit.WebViewClient
 
--dontwarn org.apache.**
--keep class org.apache.** { *;}
+            -dontwarn android.support.**
 
--dontwarn org.jivesoftware.smack.**
--keep class org.jivesoftware.smack.** { *;}
+            -dontwarn org.apache.**
+            -keep class org.apache.** { *;}
 
--dontwarn com.loopj.**
--keep class com.loopj.** { *;}
+            -dontwarn org.jivesoftware.smack.**
+            -keep class org.jivesoftware.smack.** { *;}
 
--dontwarn com.squareup.okhttp.**
--keep class com.squareup.okhttp.** { *;}
--keep interface com.squareup.okhttp.** { *; }
+            -dontwarn com.loopj.**
+            -keep class com.loopj.** { *;}
 
--dontwarn okio.**
+            -dontwarn com.squareup.okhttp.**
+            -keep class com.squareup.okhttp.** { *;}
+            -keep interface com.squareup.okhttp.** { *; }
 
--dontwarn org.xbill.**
--keep class org.xbill.** { *;}
+            -dontwarn okio.**
 
--keepattributes *Annotation*
+            -dontwarn org.xbill.**
+            -keep class org.xbill.** { *;}
+
+            -keepattributes *Annotation*
 
         </insert>
     </proguardAdditions>
 
     <!-- optional files or directories to copy to Intermediate/Android/APK -->
     <resourceCopies>
-        <copyDir src="$S(PluginDir)/../ThirdParty/Android/libs/" dst="$S(BuildDir)/libs/" />
-        <copyDir src="$S(PluginDir)/Private/Android/Java/" dst="$S(BuildDir)/src/com/tds/" />
+        <copyDir src="$S(PluginDir)/../ThirdParty/Android/libs/" dst="$S(BuildDir)/libs/"/>
+        <copyDir src="$S(PluginDir)/Private/Android/Java/" dst="$S(BuildDir)/src/com/tds/"/>
     </resourceCopies>
 
     <buildGradleAdditions>
         <insert>
-repositories { flatDir { dirs 'src/main/libs/' } }
-dependencies.implementation(name: 'TapCommon_3.18.1',ext:'aar')
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
+            repositories { flatDir { dirs 'src/main/libs/' } }
+            dependencies.implementation(name: 'TapCommon_3.21.0',ext:'aar')
+            android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_1_8
+                    targetCompatibility JavaVersion.VERSION_1_8
+                }
+            }
         </insert>
     </buildGradleAdditions>
 </root>

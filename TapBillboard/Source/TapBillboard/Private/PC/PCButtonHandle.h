@@ -16,7 +16,7 @@ public:
 	
 	virtual void UpdateTexture(const FString IconUrl) override;
 
-	void HandleImageRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
+	void OnDownloadFinished(UTexture2D* Texture);
 
 	TWeakObjectPtr<UTapPlatformButton> SavedButton;
 };

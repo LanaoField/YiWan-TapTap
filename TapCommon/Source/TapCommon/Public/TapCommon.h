@@ -4,12 +4,9 @@
 
 #include "Modules/ModuleManager.h"
 
-#define TapUECommon_VERSION_NUMBER "31801001"
-#define TapUECommon_VERSION "3.18.1"
-
 class FSlateStyleSet;
 
-DECLARE_DELEGATE_OneParam(FAsyncDownloadImage, UTexture2DDynamic*);
+DECLARE_DELEGATE_OneParam(FAsyncDownloadImage, UTexture2D*);
 
 class TAPCOMMON_API FTapCommonModule : public IModuleInterface
 {

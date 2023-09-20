@@ -2,6 +2,7 @@
 
 #include "AntiAddictionUE.h"
 #include "Engine.h"
+#include "TapJNI.h"
 #include "TUDebuger.h"
 #include "TUJsonHelper.h"
 #include "TUMobileBridge.h"
@@ -12,6 +13,8 @@
 #define TAP_ANTI_IMPL "com.tapsdk.antiaddictionui.wrapper.TDSAntiAddictionUIServiceImpl"
 #define TAP_ANTI_SERVICE "TDSAntiAddictionUIService"
 
+#define JavaAntiAddictionUE "com/tds/AntiAddictionUE"
+
 AAUChinaAndroidImpl::~AAUChinaAndroidImpl() {
 }
 
@@ -20,15 +23,20 @@ AAUChinaAndroidImpl::AAUChinaAndroidImpl() {
 }
 
 
-void AAUChinaAndroidImpl::Startup(const FString& UserID) {
-	FString JsonOutString;
-	const TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<
-		TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonOutString);
-	Writer->WriteObjectStart();
-	Writer->WriteValue(TEXT("userID"), UserID);
-	Writer->WriteObjectEnd();
-	Writer->Close();
-	TUMobileBridge::AsyncPerform(TAP_ANTI_SERVICE, "startup", JsonOutString);
+void AAUChinaAndroidImpl::Startup(const FString& UserID, bool bIsTapUser) {
+	TapJNI::JNI JNI;
+	auto ClassObject = JNI.FindClass(JavaAntiAddictionUE);
+	JNI.CallStaticVoidMethod(ClassObject, "startup",
+							 "(Landroid/app/Activity;Ljava/lang/String;Z)V", *JNI.GetActivity(),
+							 *JNI.ToJavaString(UserID), bIsTapUser);
+}
+
+void AAUChinaAndroidImpl::SetTestEnv(bool Enable) {
+	bTestEnvEnable = Enable;
+	TapJNI::JNI JNI;
+	auto ClassObject = JNI.FindClass(JavaAntiAddictionUE);
+	JNI.CallStaticVoidMethod(ClassObject, "setTestEnv",
+							 "(Landroid/app/Activity;Z)V", *JNI.GetActivity(), Enable);
 }
 
 void AAUChinaAndroidImpl::Exit() {
@@ -54,7 +62,7 @@ void AAUChinaAndroidImpl::InitImpl(const FAAUConfig& _Config) {
 		TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonOutString);
 	Writer->WriteObjectStart();
 	Writer->WriteValue(TEXT("clientID"), _Config.ClientID);
-	Writer->WriteValue(TEXT("useTapLogin"), _Config.UseTapLogin);
+	Writer->WriteValue(TEXT("useTapLogin"), false);
 	Writer->WriteValue(TEXT("showSwitchAccount"), _Config.ShowSwitchAccount); //安卓不用region, SDK里只有China
 	Writer->WriteObjectEnd();
 	Writer->Close();

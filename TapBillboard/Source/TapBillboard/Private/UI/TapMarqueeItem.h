@@ -18,7 +18,7 @@ class TAPBILLBOARD_API UTapMarqueeItem : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void UpdateItem(const FText& Content, UTexture2DDynamic* InIconTexture, float InStartupOffset, int64 Id, bool bMarkReadWhenFinished = false);
+	void UpdateItem(const FText& Content, UTexture2D* InIconTexture, float InStartupOffset, int64 Id, bool bMarkReadWhenFinished = false);
 	
 	void UpdateStyle(const FAnnouncementStyleData& StyleData);
 	

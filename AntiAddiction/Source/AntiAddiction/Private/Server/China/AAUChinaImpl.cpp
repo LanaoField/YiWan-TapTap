@@ -4,6 +4,7 @@
 #include "TapCommon.h"
 #include "TUDebuger.h"
 #include "TUHUD.h"
+#include "TUSettings.h"
 #include "Model/AAUUser.h"
 #include "Server/AAUHelper.h"
 #include "Server/AAUNet.h"
@@ -30,7 +31,7 @@ void AAUChinaImpl::InitImpl(const FAAUConfig& _Config) {
 	});
 }
 
-void AAUChinaImpl::Startup(const FString& UserID) {
+void AAUChinaImpl::Startup(const FString& UserID, bool bIsTapUser) {
 	CurrentUserID = UserID;
 	TSharedPtr<FAAUUser> LoginUser = TUDataStorage<FAAUStorage>::LoadStruct<FAAUUser>(FAAUStorage::HasLoginedUser + UserID);
 
@@ -84,6 +85,26 @@ void AAUChinaImpl::Startup(const FString& UserID) {
 		}
 	}
 	AAUChinaRealName::CheckRealNameState(UserID, ResultBlock);
+}
+
+void AAUChinaImpl::SetTestEnv(bool Enable)
+{
+	bTestEnvEnable = Enable;
+	static UUserWidget * widget = nullptr;
+	if (Enable && widget == nullptr) {
+		if (UClass* MyWidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/AntiAddiction/AAUEnvTipWidget.AAUEnvTipWidget_C'")))
+		{
+			if (TUSettings::GetGameInstance().IsValid()) {
+				widget = CreateWidget<UUserWidget>(TUSettings::GetGameInstance().Get(), MyWidgetClass);
+				widget->AddToViewport(INT32_MAX-10);
+			}
+		}
+	} else {
+		if (widget != nullptr) {
+			widget->RemoveFromParent();
+			widget = nullptr;
+		}
+	}
 }
 
 void AAUChinaImpl::Exit() {
@@ -145,7 +166,7 @@ void AAUChinaImpl::TryAgainLogin(const FString& ErrMsg) {
 		Msg = ErrMsg;
 	}
 	UAAUTipWidget::ShowTip(Msg, TEXT("重试"), [=]() {
-		Startup(CurrentUserID);
+		Startup(CurrentUserID, false);
 	});
 }
 
@@ -207,10 +228,12 @@ void AAUChinaImpl::ShowRealNameUI(UAAUManualRealNameWidget *Widget, AAURealNameW
 		Widget->SubmitBlock = [=](const FString& Name, const FString& CardID) {
 			if (Name.IsEmpty()) {
 				Widget->ShowError(TEXT("姓名不能为空"));
+				Widget->SetFocusEditableTextBox(EManualRealNameTextBoxType::Name);
 				return;
 			}
 			if (CardID.IsEmpty()) {
 				Widget->ShowError(TEXT("身份信息不能为空"));
+				Widget->SetFocusEditableTextBox(EManualRealNameTextBoxType::Id);
 				return;
 			}
 			FTapCommonModule::TapThrobberShowWait();

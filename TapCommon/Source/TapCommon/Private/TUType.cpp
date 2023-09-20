@@ -40,4 +40,4 @@ namespace TUType {
 	FString PermissionScope::Email = "email";	
 }
 
-
+DEFINE_LOG_CATEGORY(LogTap);

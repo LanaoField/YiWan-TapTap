@@ -96,6 +96,13 @@ FString TUHelper::CombinParameters(const TSharedPtr<FJsonObject>& parameters, bo
 	return FString::Join(keyValues, TEXT("&"));
 }
 
+FString TUHelper::GetLCSign(const FString& ClientToken)
+{
+	const int64 Ticks = FDateTime::UtcNow().ToUnixTimestamp() * 1000;
+	const FString TimeStr = FString::Printf(TEXT("%010lld"), Ticks);
+	return FMD5::HashAnsiString(*(TimeStr + ClientToken)) + TEXT(",") + TimeStr;
+}
+
 #if PLATFORM_MAC
 void TUHelper::ActivateItself() {
 	FString Path = FPlatformProcess::BaseDir();
@@ -112,28 +119,33 @@ void TUHelper::ActivateItself() {
 
 #if PLATFORM_WINDOWS
 void TUHelper::ActivateItself() {
-	DWORD dwProcID = FPlatformProcess::GetCurrentProcessId();
-	Windows::HWND hWnd = GetTopWindow(GetDesktopWindow());
-	while(hWnd)
+	TSharedPtr<SWindow> Win;
+	if (GEngine && GEngine->GameViewport)
 	{
-		DWORD dwWndProcID = 0;
-		GetWindowThreadProcessId(hWnd, &dwWndProcID);
-		if(dwWndProcID == dwProcID)
+		Win = GEngine->GameViewport->GetWindow();
+	}
+	if (!Win)
+	{
+		Win = FSlateApplication::Get().GetActiveTopLevelWindow();
+	}
+	if (Win)
+	{
+		if (TSharedPtr<FGenericWindow> NWin = Win->GetNativeWindow())
 		{
-			break;
+			if (Windows::HWND wnd_ = static_cast<Windows::HWND>(NWin->GetOSWindowHandle()))
+			{
+				HWND hForeWnd = ::GetForegroundWindow();
+				DWORD dwForeID = ::GetWindowThreadProcessId(hForeWnd, NULL);
+				DWORD dwCurID = ::GetCurrentThreadId();
+				::AttachThreadInput(dwCurID, dwForeID, true);
+				::ShowWindow(wnd_, SW_SHOW);
+				::SetWindowPos(wnd_, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+				::SetWindowPos(wnd_, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+				::SetForegroundWindow(wnd_);
+				::AttachThreadInput(dwCurID, dwForeID, false);
+			}
 		}
-		hWnd = GetNextWindow(hWnd, GW_HWNDNEXT);
 	}
-	if (!hWnd)
-	{
-		return;
-	}
-	Windows::HWND hCurWnd = ::GetForegroundWindow();
-	DWORD dwMyID = Windows::GetCurrentThreadId();
-	DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
-	::AttachThreadInput(dwCurID, dwMyID, true);   
-	::SetForegroundWindow(hWnd);
-	::AttachThreadInput(dwCurID, dwMyID, false);
 }
 #endif
 

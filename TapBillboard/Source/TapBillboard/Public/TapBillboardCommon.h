@@ -124,7 +124,7 @@ public:
 
 	FString GenerateSplashUrl(const TMap<FString, FString>& DimensionsMap, int64 SplashID);
 
-	UTexture2DDynamic* GetMarqueeIconTexture() const;
+	UTexture2D* GetMarqueeIconTexture() const;
 
 	const FAnnouncementStyleData& GetMarqueeStyle() const;
 
@@ -172,6 +172,8 @@ protected:
 	void NetDownloadWebFontCallback(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
 	
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+
+	virtual FString GetReferencerName() const override { return TEXT("TapBillboardInterface"); }
 	
 	FOnCustomLinkClicked OnCustomLinkClicked;
 
@@ -184,7 +186,7 @@ protected:
 	FAnnouncementStyleData CachedMarqueeStyle;
 	FBadgeDetails CachedBadgeDetails;
 	
-	UTexture2DDynamic* MarqueeIconTexture;
+	UTexture2D* MarqueeIconTexture;
 
 	
 	TSoftClassPtr<UTapBillboardBrowserNavigate> NavigateBrowserClass;
@@ -211,7 +213,7 @@ private:
 
 	void InternalFetchMarqueeStyleCallback(const FAnnouncementStyleData& StyleData);
 
-	void InternalDownloadMarqueeImageCallback(UTexture2DDynamic* Texture);
+	void InternalDownloadMarqueeImageCallback(UTexture2D* Texture);
 
 	void TimerFetchMarqueeData();
 

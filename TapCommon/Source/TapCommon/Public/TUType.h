@@ -89,3 +89,5 @@ namespace TUType {
 		static FString Email;
 	};
 }
+
+TAPCOMMON_API DECLARE_LOG_CATEGORY_EXTERN(LogTap, Log, All);

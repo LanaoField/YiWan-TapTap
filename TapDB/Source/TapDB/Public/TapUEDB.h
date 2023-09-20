@@ -43,6 +43,9 @@ public:
 	// iOS 独有
 	static void AdvertiserIDCollectionEnabled(bool Enable);
 
+	// Android 独有
+	static void SetOAIDCert(const FString& Cert);
+
 	static void EnableLog(bool Enable);
 	
 };

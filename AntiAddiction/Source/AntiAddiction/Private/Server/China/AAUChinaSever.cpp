@@ -326,6 +326,9 @@ void AAUChinaSever::StartCheckTimer() {
 		return;
 	}
 	TUSettings::GetGameInstance()->GetTimerManager().SetTimer(CheckTimer, [=]() {
+		if (!CurrentUser.IsValid()) {
+			return;
+		}
 		UpdateCostAndRemainTime();
 		
 		if (AccessTokenIsInvaild(CurrentUser->AccessToken) || !FAAUChinaConfigModel::GetLocalModel()->upload_user_action) {
@@ -344,6 +347,9 @@ void AAUChinaSever::StartCountDownTimer() {
 		return;
 	}
 	TUSettings::GetGameInstance()->GetTimerManager().SetTimer(CountDownTimer, [=]() {
+		if (!CurrentUser.IsValid()) {
+			return;
+		}
 		if (CurrentUser->AgeLimit == EAAUAgeLimit::Adult) {
 			
 		}
@@ -393,6 +399,9 @@ void AAUChinaSever::StartTimer() {
 }
 
 void AAUChinaSever::UploadTime(bool IsPure) {
+	if (!CurrentUser.IsValid()) {
+		return;
+	}
 	static bool IsUploading = false;
 	if (IsUploading) {
 		return;
@@ -419,6 +428,9 @@ void AAUChinaSever::UploadTime(bool IsPure) {
 	auto SendTime = GetCurrentTime();
 	AAUNet::CheckPlayable(CurrentUser->UserID, CurrentUser->AccessToken, CostTimes, CostTimes, [=](TSharedPtr<FAAUPlayableModel> ModelPtr,  const FTUError& Error) {
 		IsUploading = false;
+		if (!CurrentUser.IsValid()) {
+			return;
+		}
 		if (ModelPtr.IsValid()) {
 			PlayableServerCrashCount = 0;
 			if (ModelPtr->status > 0) {

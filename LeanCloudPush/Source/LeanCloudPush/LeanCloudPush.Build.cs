@@ -38,10 +38,10 @@ public class LeanCloudPush : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"Http",
+				"HTTP",
 				"Json",
 				"JsonUtilities",
-				"LeanCloud"
+				"LeanCloudMobile"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

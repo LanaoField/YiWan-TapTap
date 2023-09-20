@@ -9,7 +9,5 @@
 class TAPBOOTSTRAP_API TapBootstrapObjcHelper {
 public:
 	static TSharedPtr<FTDSUser> Convert(TDSUser *user);
-	static TSharedPtr<FTDSUser> Convert(LCUser *user);
 
-	static TDSUser * Convert(const FTDSUser& User);
 };

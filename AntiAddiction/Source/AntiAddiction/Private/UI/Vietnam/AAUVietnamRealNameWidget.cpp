@@ -11,7 +11,6 @@ UAAUVietnamRealNameWidget::UAAUVietnamRealNameWidget(const FObjectInitializer& O
 {
 
 }
-
 // TSharedPtr<SAAURealNameVietnam> UAAUVietnamRealNameWidget::ShowUI(const FOnRealNameClosed& OnClosed, const FOnRealNameSubmit& OnSubmit) {
 // 	// if (UClass* MyWidgetClass = LoadClass<UAAUVietnamRealNameWidget>(nullptr, TEXT("WidgetBlueprint'/AntiAddiction/AAUVietnamRealNameBP.AAUVietnamRealNameBP_C'")))
 // 	// {

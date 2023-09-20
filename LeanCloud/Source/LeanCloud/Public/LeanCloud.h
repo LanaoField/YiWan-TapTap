@@ -1,9 +1,7 @@
 #pragma once
-#include "LeanCloudType.h"
 
-class LEANCLOUD_API FLeanCloud {
+#define LeanCloud_Unreal_Version "1.1.0"
 
-public:
-	static void Init(const FLCConfig& Config);
-
+struct LEANCLOUD_API FLeanCloud {
+	
 };

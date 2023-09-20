@@ -134,7 +134,12 @@ GetSDKConfig(TFunction<void(TSharedPtr<FAAUVietnamConfigModel> ModelPtr, const F
 void AAUNet::SetPayment(int Amount, const FAAUUser& User,
                         TFunction<void(TSharedPtr<FAAUPaymentModel> ModelPtr, const FTUError& Error)> CallBack) {
 	const TSharedPtr<AAUNet> request = MakeShareable(new AAUNet());
-	request->URL = AAURegionConfig::Get()->AntiAddictionUrl() / "{region}/clients/{clients}/users/{users}/payments";
+	request->URL = AAURegionConfig::Get()->AntiAddictionUrl() / "{region}/clients/{clients}/users/{users}";
+	if (AAUImpl::bTestEnvEnable)
+	{
+		request->URL = request->URL / "fake";
+	}
+	request->URL = request->URL / "payments";
 	AddUriParas(request->URL, User.UserID, request->PathParameters);
 	request->Type = Post;
 	request->Headers.Add("Authorization", User.AccessToken);
@@ -148,7 +153,12 @@ void AAUNet::SetPayment(int Amount, const FAAUUser& User,
 void AAUNet::CheckPayment(int Amount, const FAAUUser& User,
 	TFunction<void(TSharedPtr<FAAUPayableModel> ModelPtr, const FTUError& Error)> CallBack) {
 	const TSharedPtr<AAUNet> request = MakeShareable(new AAUNet());
-	request->URL = AAURegionConfig::Get()->AntiAddictionUrl() / "{region}/clients/{clients}/users/{users}/payable";
+	request->URL = AAURegionConfig::Get()->AntiAddictionUrl() / "{region}/clients/{clients}/users/{users}";
+	if (AAUImpl::bTestEnvEnable)
+	{
+		request->URL = request->URL / "fake";
+	}
+	request->URL = request->URL / "payable";
 	AddUriParas(request->URL, User.UserID, request->PathParameters);
 	request->Type = Post;
 	request->Headers.Add("Authorization", User.AccessToken);
@@ -163,7 +173,12 @@ void AAUNet::CheckPlayable(const FString& UserID, const FString& Token, TArray<T
                            TArray<TArray<int>> LocalTimes,
                            TFunction<void(TSharedPtr<FAAUPlayableModel> ModelPtr, const FTUError& Error)> CallBack, bool IsLogin) {
 	const TSharedPtr<AAUNet> request = MakeShareable(new AAUNet());
-	request->URL = AAURegionConfig::Get()->AntiAddictionUrl() / "{region}/clients/{clients}/users/{users}/playable";
+	request->URL = AAURegionConfig::Get()->AntiAddictionUrl() / "{region}/clients/{clients}/users/{users}";
+	if (AAUImpl::bTestEnvEnable)
+	{
+		request->URL = request->URL / "fake";
+	}
+	request->URL = request->URL / "playable";
 	AddUriParas(request->URL, UserID, request->PathParameters);
 	request->Type = Post;
 	if (AAUImpl::Config.Region == EAAURegion::China) {
@@ -175,7 +190,7 @@ void AAUNet::CheckPlayable(const FString& UserID, const FString& Token, TArray<T
 	TSharedRef <TJsonWriter<TCHAR>> JsonWriter = TJsonWriterFactory<>::Create(&JsonStr);
 	JsonWriter->WriteObjectStart();
 	JsonWriter->WriteValue("game", AAUImpl::Get()->Config.ClientID);
-	const FString Version = AntiAddictionUE_VERSION;
+	const FString Version = AntiAddiction_UE_VERSION;
 	JsonWriter->WriteValue("sdkVersion", Version);
 	JsonWriter->WriteObjectStart("play_logs");
 	JsonWriter->WriteArrayStart("server_times");
@@ -311,7 +326,7 @@ void AAUNet::CheckRealNameState(const FString& UserID,
 
 TMap<FString, FString> AAUNet::CommonHeaders() {
 	TMap<FString, FString> HeadMap = TUHttpRequest::CommonHeaders();
-	FString UAStr = FString::Printf(TEXT("Version=%s&Platform=%s&Unreal-SDK-Version=%s"), TEXT(AntiAddictionUE_VERSION), *TUDeviceInfo::GetPlatform(), *TUDeviceInfo::GetEngineVersion());
+	FString UAStr = FString::Printf(TEXT("Version=%s&Platform=%s&Unreal-SDK-Version=%s"), AntiAddiction_UE_VERSION, *TUDeviceInfo::GetPlatform(), *TUDeviceInfo::GetEngineVersion());
 	HeadMap.Add("UA", UAStr);
 	if (AAUImpl::Config.Region == EAAURegion::China) {
 		HeadMap.Add("Accept-Language", "zh-CN");
@@ -326,7 +341,7 @@ TMap<FString, FString> AAUNet::CommonHeaders() {
 TSharedPtr<FJsonObject> AAUNet::CommonParameters() {
 	auto _Parameters = TUHttpRequest::CommonParameters();
 	_Parameters->SetStringField("game", AAUImpl::Get()->Config.ClientID);
-	_Parameters->SetStringField("sdkVersion", AntiAddictionUE_VERSION);
+	_Parameters->SetStringField("sdkVersion", AntiAddiction_UE_VERSION);
 	return _Parameters;
 }
 

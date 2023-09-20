@@ -7,7 +7,8 @@ class AAUChinaAndroidImpl: public AAUImpl {
 public:
 	AAUChinaAndroidImpl();
 	virtual ~AAUChinaAndroidImpl() override;
-	virtual void Startup(const FString& UserID) override;
+	virtual void Startup(const FString& UserID, bool bIsTapUser) override;
+	virtual void SetTestEnv(bool Enable) override;
 	virtual void Exit() override;
 	virtual EAAUAgeLimit GetAgeRange() override;
 	virtual int GetRemainingTime() override;

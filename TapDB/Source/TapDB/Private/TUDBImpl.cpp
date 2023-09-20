@@ -101,6 +101,10 @@ void TUDBImpl::AdvertiserIDCollectionEnabled(bool Enable) {
 	UnsupportedPlatformsLog
 }
 
+void TUDBImpl::SetOAIDCert(const FString& Cert) {
+	UnsupportedPlatformsLog
+}
+
 void TUDBImpl::EnableLog(bool Enable) {
 	UnsupportedPlatformsLog
 }

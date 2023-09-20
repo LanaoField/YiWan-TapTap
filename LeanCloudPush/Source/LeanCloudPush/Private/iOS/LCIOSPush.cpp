@@ -13,12 +13,33 @@ static NSData *NotificationDeviceToken = nil;
 static NSString *TeamID = nil;
 
 void InitPushToken() {
-	if (NotificationDeviceToken == nil) {
-		return;
-	}
-	if (TeamID.length <= 0) {
-		return;
-	}
+    // NSLog(@"hyf----------InitPushToken begin");
+    if (![NotificationDeviceToken isKindOfClass:[NSData class]]) {
+        // NSLog(@"hyf----------InitPushToken NotificationDeviceToken is not NSData");
+        return;
+    }
+    if (NotificationDeviceToken.length <= 0) {
+        NSLog(@"hyf----------InitPushToken NotificationDeviceToken length is zero");
+        return;
+    }
+    NSUInteger dataLength = NotificationDeviceToken.length;
+    const unsigned char *dataBuffer = (const unsigned char *)NotificationDeviceToken.bytes;
+    NSMutableString *hexTokenString  = [NSMutableString stringWithCapacity:(dataLength * 2)];
+    for (int i = 0; i < dataLength; ++i) {
+        [hexTokenString appendFormat:@"%02x", dataBuffer[i]];
+    }
+    NSLog(@"hyf----------InitPushToken NotificationDeviceToken:%@", hexTokenString);
+    
+    if (![TeamID isKindOfClass:[NSString class]]) {
+        // NSLog(@"hyf----------InitPushToken TeamID is not NSString");
+        return;
+    }
+    // NSLog(@"hyf----------InitPushToken TeamID is NSString");
+    if (TeamID.length <= 0) {
+        NSLog(@"hyf----------InitPushToken TeamID length is zero");
+        return;
+    }
+    NSLog(@"hyf----------InitPushToken TeamID: %@", TeamID);
 	[[LCInstallation defaultInstallation] setDeviceTokenFromData:NotificationDeviceToken teamId:TeamID];
 	[[LCInstallation defaultInstallation] saveInBackground];
 	TeamID = nil;
@@ -27,7 +48,9 @@ void InitPushToken() {
 
 void FLCIOSPush::Register(const FString& InTeamID) {
     
-    TeamID = LCObjcHelper::Convert(InTeamID);
+    TeamID = LCObjcHelper::Convert(InTeamID).mutableCopy;
+    NSLog(@"hyf----------FLCIOSPush::Register TeamID: %@", TeamID);
+
     InitPushToken();
     LCDebuger::DisplayLog("hyf----------FLCIOSPush::Register: " + InTeamID);
 // #if !PLATFORM_TVOS && !NOTIFICATIONS_ENABLED
@@ -46,8 +69,9 @@ void FLCIOSPush::Register(const FString& InTeamID) {
                     int32 types = (int32)granted;
                                       if (granted)
                                       {
-                                          UIApplication* application = [UIApplication sharedApplication];
-                                          [application registerForRemoteNotifications];
+                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                              [[UIApplication sharedApplication] registerForRemoteNotifications];
+                                          });
                                           
                                       }
                     FFunctionGraphTask::CreateAndDispatchWhenReady([types]()
@@ -60,6 +84,21 @@ void FLCIOSPush::Register(const FString& InTeamID) {
     });
 // #endif
 
+}
+
+FString FLCIOSPush::GetInstallationObjectID()
+{
+    return LCObjcHelper::Convert([LCInstallation defaultInstallation].objectId);
+}
+
+FString FLCIOSPush::GetInstallationInstallationId()
+{
+    return LCObjcHelper::Convert([LCInstallation defaultInstallation].installationId);
+}
+
+FString FLCIOSPush::GetInstallationDeviceToken()
+{
+    return LCObjcHelper::Convert([LCInstallation defaultInstallation].deviceToken);
 }
 
 // void FLCIOSPush::SubscribeChannel(const FString& ChannelName) {
@@ -91,7 +130,7 @@ static NSMutableSet *MissMethod;
 
 @implementation IOSAppDelegate (LeanCloud)
 
-+ (void)swizzleInstanceMethodWithOriginSelector:(SEL)originSelector swizzledSelector:(SEL)swizzledSelector {
++ (void)LeanCloud_swizzleInstanceMethodWithOriginSelector:(SEL)originSelector swizzledSelector:(SEL)swizzledSelector {
     Method originalMethod = class_getInstanceMethod(self, originSelector);
     Method swizzledMethod = class_getInstanceMethod(self, swizzledSelector);
     if (originalMethod && swizzledMethod) {
@@ -107,42 +146,18 @@ static NSMutableSet *MissMethod;
     }
 }
 
-
 + (void)load {
     MissMethod = [[NSMutableSet alloc] initWithCapacity:4];
-    [self swizzleInstanceMethodWithOriginSelector:@selector(application:didFinishLaunchingWithOptions:) swizzledSelector:@selector(leancould_application:didFinishLaunchingWithOptions:)];
-    [self swizzleInstanceMethodWithOriginSelector:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:) swizzledSelector:@selector(leancould_application:didRegisterForRemoteNotificationsWithDeviceToken:)];
-    // [self swizzleInstanceMethodWithOriginSelector:@selector(leancould_userNotificationCenter:willPresentNotification:withCompletionHandler:) swizzledSelector:@selector(userNotificationCenter:willPresentNotification:withCompletionHandler:)];
-    // [self swizzleInstanceMethodWithOriginSelector:@selector(leancould_userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:) swizzledSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)];
-    
+    [self LeanCloud_swizzleInstanceMethodWithOriginSelector:@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:) swizzledSelector:@selector(leancould_application:didRegisterForRemoteNotificationsWithDeviceToken:)];
 }
-
-
-- (BOOL)leancould_application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // FLCIOSPush::PushUserInfo(launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]);
-    [self leancould_application:application didFinishLaunchingWithOptions:launchOptions];
-    NSLog(@"hyf----------leancould_application");
-    return YES;
-}
-
 
 - (void)leancould_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSLog(@"hyf----------didRegisterForRemoteNotificationsWithDeviceToken");
-    NotificationDeviceToken = deviceToken;
+    NotificationDeviceToken = deviceToken.mutableCopy;
     InitPushToken();
     if (![MissMethod containsObject:NSStringFromSelector(@selector(application:didRegisterForRemoteNotificationsWithDeviceToken:))]) {
         [self leancould_application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
     }
-    NSUInteger dataLength = deviceToken.length;
-    if (dataLength == 0) {
-        return;
-    }
-    const unsigned char *dataBuffer = (const unsigned char *)deviceToken.bytes;
-    NSMutableString *hexTokenString  = [NSMutableString stringWithCapacity:(dataLength * 2)];
-    for (int i = 0; i < dataLength; ++i) {
-        [hexTokenString appendFormat:@"%02x", dataBuffer[i]];
-    }
-    NSLog(@"push DeviceToken token:%@", hexTokenString);
 }
 
 // - (void)leancould_userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {

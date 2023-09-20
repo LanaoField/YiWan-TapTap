@@ -2,7 +2,7 @@
 
 using UnrealBuildTool;
 using System.IO;
-using System;
+using Tools.DotNETCommon;
 
 public class AntiAddiction : ModuleRules
 {
@@ -12,6 +12,11 @@ public class AntiAddiction : ModuleRules
 		
 		string configFile = Path.Combine(PluginDirectory, "Content/Assets/**");
 		RuntimeDependencies.Add(configFile);
+		
+		FileReference fileRef = new FileReference(Path.Combine(PluginDirectory, Name + ".uplugin"));
+		PluginInfo plugin = new PluginInfo(fileRef, PluginType.Project);	
+		PublicDefinitions.Add(Name + "_UE_VERSION_NUMBER=TEXT(\"" + plugin.Descriptor.Version + "\")");
+		PublicDefinitions.Add(Name + "_UE_VERSION=TEXT(\"" + plugin.Descriptor.VersionName + "\")");
 		
 		PublicIncludePaths.AddRange(
 			new string[] {

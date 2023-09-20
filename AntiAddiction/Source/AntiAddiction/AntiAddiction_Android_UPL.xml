@@ -14,12 +14,13 @@
     <!-- optional files or directories to copy to Intermediate/Android/APK -->
     <resourceCopies>
         <copyDir src="$S(PluginDir)/../ThirdParty/Android/libs/" dst="$S(BuildDir)/libs/" />
+        <copyDir src="$S(PluginDir)/Private/Server/China/Android/Java/" dst="$S(BuildDir)/src/com/tds/"/>
     </resourceCopies>
 
     <buildGradleAdditions>
         <insert>
-dependencies.implementation(name: 'AntiAddiction_3.18.1',ext:'aar')
-dependencies.implementation(name: 'AntiAddictionUI_3.18.1',ext:'aar')
+            dependencies.implementation(name: 'AntiAddiction_3.21.0',ext:'aar')
+            dependencies.implementation(name: 'AntiAddictionUI_3.21.0',ext:'aar')
         </insert>
     </buildGradleAdditions>
 </root>

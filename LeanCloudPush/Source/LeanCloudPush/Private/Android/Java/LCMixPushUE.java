@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import cn.leancloud.LCMixPushManager;
+import cn.leancloud.LCInstallation;
 import cn.leancloud.LCException;
 import cn.leancloud.LCOPPOPushAdapter;
 import cn.leancloud.callback.LCCallback;
@@ -15,8 +17,8 @@ public class LCMixPushUE {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                cn.leancloud.LCMixPushManager.registerHMSPush(activity.getApplication());
-                cn.leancloud.LCMixPushManager.connectHMS(activity);
+                LCMixPushManager.registerHMSPush(activity.getApplication());
+                LCMixPushManager.connectHMS(activity);
 //                 cn.leancloud.LCMixPushManager.turnOnHMSPush(activity, new LCCallback<Void>() {
 //                     @Override
 //                     protected void internalDone0(Void aVoid, LCException LCException) {
@@ -35,7 +37,7 @@ public class LCMixPushUE {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                cn.leancloud.LCMixPushManager.registerHonorPush(activity);
+                LCMixPushManager.registerHonorPush(activity);
             }
         });
     }
@@ -44,7 +46,7 @@ public class LCMixPushUE {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                cn.leancloud.LCMixPushManager.registerXiaomiPush(activity.getApplicationContext(), miAppId, miAppKey);
+                LCMixPushManager.registerXiaomiPush(activity.getApplicationContext(), miAppId, miAppKey);
             }
         });
     }
@@ -53,7 +55,7 @@ public class LCMixPushUE {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                cn.leancloud.LCMixPushManager.registerFlymePush(activity.getApplicationContext(), flymeId, flymeKey);
+                LCMixPushManager.registerFlymePush(activity.getApplicationContext(), flymeId, flymeKey);
             }
         });
     }
@@ -62,8 +64,8 @@ public class LCMixPushUE {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                cn.leancloud.LCMixPushManager.registerVIVOPush(activity.getApplication());
-                cn.leancloud.LCMixPushManager.turnOnVIVOPush(new LCCallback<Boolean>() {
+                LCMixPushManager.registerVIVOPush(activity.getApplication());
+                LCMixPushManager.turnOnVIVOPush(new LCCallback<Boolean>() {
                     @Override
                     protected void internalDone0(Boolean aBoolean, LCException e) {
                         if (null != e) {
@@ -82,19 +84,28 @@ public class LCMixPushUE {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                cn.leancloud.LCMixPushManager.registerOppoPush(activity.getApplicationContext(), appKey, appSecret, new LCOPPOPushAdapter() {
+                LCMixPushManager.registerOppoPush(activity.getApplicationContext(), appKey, appSecret, new LCOPPOPushAdapter() {
 
                 });
             }
         });
 
     }
+    
+    public static String getInstallationObjectID() {
+        return LCInstallation.getCurrentInstallation().getObjectId();
+    }
+    public static String getInstallationInstallationId() {
+        return LCInstallation.getCurrentInstallation().getInstallationId();
+    }
+    public static String getInstallationRegistrationId() {
+        return LCInstallation.getCurrentInstallation().getString(LCInstallation.REGISTRATION_ID);
+    }
 
     public static String getDeviceName() {
         final String model = !TextUtils.isEmpty(Build.MODEL) ? Build.MODEL : "unknown";
         final String brand = !TextUtils.isEmpty(Build.BRAND) ? Build.BRAND : "unknown";
         return model + " " + brand;
-
     }
     
     public static void onResume(final Activity activity) {

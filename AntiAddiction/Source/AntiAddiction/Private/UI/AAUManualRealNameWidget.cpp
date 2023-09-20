@@ -31,6 +31,20 @@ void UAAUManualRealNameWidget::ShowError(const FString& ErrorMsg) {
 	ErrorTipLabel->SetText(FText::FromString(ErrorMsg));
 }
 
+void UAAUManualRealNameWidget::SetFocusEditableTextBox(EManualRealNameTextBoxType BoxType)
+{
+	switch (BoxType)
+	{
+	case EManualRealNameTextBoxType::Name: 
+		NameTF->SetKeyboardFocus();
+		break;
+	case EManualRealNameTextBoxType::Id: 
+		CardIDTF->SetKeyboardFocus();
+		break;
+	default: ;
+	}
+}
+
 void UAAUManualRealNameWidget::ChangeType(AAURealNameWordType _Type) {
 	Type = _Type;
 	FAAUChinaAuthIdentifyWord CurrentWord;
@@ -53,16 +67,24 @@ void UAAUManualRealNameWidget::ChangeType(AAURealNameWordType _Type) {
 	ErrorTipView->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void UAAUManualRealNameWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+	NameTF->OnTextCommitted.AddDynamic(this, &UAAUManualRealNameWidget::OnNameEditableTextBoxCommitted);
+	CardIDTF->OnTextCommitted.AddDynamic(this, &UAAUManualRealNameWidget::OnCardIdEditableTextBoxCommitted);
+}
+
 void UAAUManualRealNameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	// BackView->TitleLabel->SetText(FText::FromString("hahahaha"));
 	
 	BackView->BackButton->OnClicked.AddUniqueDynamic(this, &UAAUManualRealNameWidget::OnBackBtnClick);
 	BackView->CloseButton->OnClicked.AddUniqueDynamic(this, &UAAUManualRealNameWidget::OnCloseBtnClick);
 	BackView->SubButton->OnClicked.AddUniqueDynamic(this, &UAAUManualRealNameWidget::OnSubmitBtnClick);
 
 	ChangeType(Type);
+
+	NameTF->SetKeyboardFocus();
 }
 
 void UAAUManualRealNameWidget::OnBackBtnClick() {
@@ -84,6 +106,23 @@ void UAAUManualRealNameWidget::OnSubmitBtnClick() {
 		SubmitBlock(NameTF->GetText().ToString(), CardIDTF->GetText().ToString());
 	}
 }
+
+void UAAUManualRealNameWidget::OnNameEditableTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod == ETextCommit::OnEnter)
+	{
+		OnSubmitBtnClick();
+	}
+}
+
+void UAAUManualRealNameWidget::OnCardIdEditableTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod == ETextCommit::OnEnter)
+	{
+		OnSubmitBtnClick();
+	}
+}
+
 
 
 

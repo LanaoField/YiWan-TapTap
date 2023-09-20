@@ -1,7 +1,5 @@
 #pragma once
 
-#define TapUESupport_VERSION_NUMBER "31801001"
-#define TapUESupport_VERSION "3.18.1"
 #include "TUError.h"
 #include "TUSupportType.h"
 

@@ -20,3 +20,13 @@ void TUCommonMobileImpl::SetLanguage(ELanguageType LanguageType) {
 	TUMobileBridge::AsyncPerform(TAPCOMMON_SERVICE, "setPreferredLanguage", JsonOutString);
 	TULanguage::SetCurrentType(LanguageType);
 }
+
+void TUCommonMobileImpl::setDurationStatisticsEnabled(bool bEnable) {
+	FString JsonOutString;
+	TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonOutString);
+	Writer->WriteObjectStart();
+	Writer->WriteValue(TEXT("setDurationStatisticsEnabled"), bEnable);
+	Writer->WriteObjectEnd();
+	Writer->Close();
+	TUMobileBridge::AsyncPerform(TAPCOMMON_SERVICE, "setDurationStatisticsEnabled", JsonOutString);
+}

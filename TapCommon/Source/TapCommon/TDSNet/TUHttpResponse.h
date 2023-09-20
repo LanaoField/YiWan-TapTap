@@ -20,7 +20,7 @@ public:
 
 	State state = clientError;
 
-	int32 httpCode;
+	int32 httpCode = 0;
 
 	// TArray<uint8> content;
 	FString contentString;

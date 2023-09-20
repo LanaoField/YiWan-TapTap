@@ -2,13 +2,19 @@
 
 using UnrealBuildTool;
 using System.IO;
-using System;
+using Tools.DotNETCommon;
 
 public class TapCommon : ModuleRules
 {
     public TapCommon(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+        
+        FileReference fileRef = new FileReference(Path.Combine(PluginDirectory, Name + ".uplugin"));
+        PluginInfo plugin = new PluginInfo(fileRef, PluginType.Project);	
+        PublicDefinitions.Add(Name + "_UE_VERSION_NUMBER=TEXT(\"" + plugin.Descriptor.Version + "\")");
+        PublicDefinitions.Add(Name + "_UE_VERSION=TEXT(\"" + plugin.Descriptor.VersionName + "\")");
+
 
         PrivateIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Private")));
         PublicIncludePaths.Add(Path.GetFullPath(Path.Combine(ModuleDirectory, "Public")));
@@ -97,6 +103,8 @@ public class TapCommon : ModuleRules
                     "Security"
                 });
 
+            PublicSystemLibraries.Add("sqlite3");
+            
             PublicAdditionalFrameworks.Add(
                 new Framework(
                     "TapCommonSDK",

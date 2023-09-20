@@ -22,15 +22,14 @@ FTapBillboardPtr FTapBillboardModule::GetTapBillboardInterface()
 void FTapBillboardModule::StartupModule()
 {
 	TapBillboard = MakeShared<FTapBillboard, ESPMode::ThreadSafe>();
-#if PLATFORM_WINDOWS || PLATFORM_MAC
 	if (TapBillboard)
 	{
+#if PLATFORM_WINDOWS || PLATFORM_MAC
 		TapBillboard->LoadBrowserClass();
-
+#endif
 		check(FModuleManager::GetModulePtr<FTapBootstrapModule>("TapBootstrap") != nullptr);
 		BootstrapInitHandle = FTapBootstrap::OnBootstrapInit.AddRaw(this, &FTapBillboardModule::OnBootstrapInit);
 	}
-#endif
 }
 
 void FTapBillboardModule::ShutdownModule()

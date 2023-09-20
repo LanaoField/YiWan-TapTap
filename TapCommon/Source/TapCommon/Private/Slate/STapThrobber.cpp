@@ -4,6 +4,7 @@
 #include "Slate/STapThrobber.h"
 
 #include "SlateOptMacros.h"
+#include "TapSubsystem.h"
 #include "Slate/TapStyleCommon.h"
 #include "Slate/WidgetTransform.h"
 #include "Slate/Styles/TapThrobberWidgetStyle.h"
@@ -30,7 +31,7 @@ void STapThrobber::Construct(const FArguments& InArgs)
 			.BorderBackgroundColor(FLinearColor())
 			.HAlign(HAlign_Center)
 			.VAlign(VAlign_Center)
-			.Visibility(EVisibility::SelfHitTestInvisible)
+			.Visibility(InArgs._bBlock ? EVisibility::Visible : EVisibility::HitTestInvisible)
 		[
 			SNew(SOverlay)
 			+ SOverlay::Slot()
@@ -89,7 +90,7 @@ void STapThrobber::Construct(const FArguments& InArgs)
 		.BorderBackgroundColor(FLinearColor())
 		.HAlign(HAlign_Center)
 		.VAlign(VAlign_Center)
-		.Visibility(EVisibility::SelfHitTestInvisible)
+		.Visibility(InArgs._bBlock ? EVisibility::Visible : EVisibility::HitTestInvisible)
 		[
 			SNew(SBorder)
 			.HAlign(HAlign_Fill)
@@ -178,7 +179,7 @@ EActiveTimerReturnType STapThrobber::TimerRemoveTapThrobber(double InCurrentTime
 	}
 	if (GEngine && GEngine->GameViewport)
 	{
-		GEngine->GameViewport->RemoveViewportWidgetContent(AsShared());
+		UTapSubsystem::RemoveWidget(AsShared());
 		RemoveTimerHandle.Reset();
 	}
 	return EActiveTimerReturnType::Stop;

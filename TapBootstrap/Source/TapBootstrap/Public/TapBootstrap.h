@@ -12,4 +12,6 @@ public:
 	static void Init(const FTUConfig& InConfig);
 
 	static FTapBootstrapInit OnBootstrapInit;
+
+	static FSimpleMulticastDelegate OnUserLogout;
 };

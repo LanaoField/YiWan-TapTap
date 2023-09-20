@@ -241,7 +241,7 @@ void TUDBEvent::GenerateCommonProperties() {
 	CommonProperties->SetStringField(Key::InstallID, TUDeviceInfo::GetInstallId());
 	CommonProperties->SetStringField(Key::PersistID, DeviceID);
 	CommonProperties->SetStringField(Key::DeviceID1, DeviceID);
-	CommonProperties->SetStringField(Key::SDKVersion, TapUEDB_VERSION);
+	CommonProperties->SetStringField(Key::SDKVersion, TapDB_UE_VERSION);
 	FString GameVersion = TUDBImpl::Get()->Config.GameVersion;
 	if (!GameVersion.IsEmpty()) {
 		CommonProperties->SetStringField(Key::AppVersion, GameVersion);

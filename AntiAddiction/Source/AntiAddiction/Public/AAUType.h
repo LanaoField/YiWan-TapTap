@@ -27,7 +27,7 @@ struct FAAUConfig {
 	FString ClientID;
 
 	// 是否使用TapTap的快速实名认证(暂不支持)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DeprecatedProperty, DeprecationMessage = "UseTapLogin is useless"))
 	bool UseTapLogin = false;
 
 	// 是否支持切换账号

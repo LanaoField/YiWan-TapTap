@@ -10,7 +10,11 @@
 #include "Http.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
+#include "ImageUtils.h"
+#include "TapSubsystem.h"
 #include "Engine/Texture2DDynamic.h"
+#include "TUType.h"
+
 
 #define LOCTEXT_NAMESPACE "FTapCommonModule"
 
@@ -70,49 +74,14 @@ void HandleImageRequest(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpRespon
 {
 	if ( bSucceeded && HttpResponse.IsValid() && HttpResponse->GetContentLength() > 0 )
 	{
-		IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
-		TSharedPtr<IImageWrapper> ImageWrappers[3] =
-		{
-			ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG),
-			ImageWrapperModule.CreateImageWrapper(EImageFormat::JPEG),
-			ImageWrapperModule.CreateImageWrapper(EImageFormat::BMP),
-		};
-
-		for ( auto ImageWrapper : ImageWrappers )
-		{
-			if ( ImageWrapper.IsValid() && ImageWrapper->SetCompressed(HttpResponse->GetContent().GetData(), HttpResponse->GetContentLength()) )
-			{
-				TArray64<uint8>* RawData = new TArray64<uint8>();
-				const ERGBFormat InFormat = ERGBFormat::BGRA;
-				if ( ImageWrapper->GetRaw(InFormat, 8, *RawData) )
-				{
-					if ( UTexture2DDynamic* Texture = UTexture2DDynamic::Create(ImageWrapper->GetWidth(), ImageWrapper->GetHeight()) )
-					{
-						Texture->SRGB = true;
-						Texture->UpdateResource();
-
-						FTexture2DDynamicResource* TextureResource = static_cast<FTexture2DDynamicResource*>(Texture->Resource);
-						if (TextureResource)
-						{
-							ENQUEUE_RENDER_COMMAND(FWriteRawDataToTexture)(
-								[TextureResource, RawData](FRHICommandListImmediate& RHICmdList)
-								{
-									WriteRawToTexture_RenderThread(TextureResource, RawData);
-								});
-						}
-						else
-						{
-							delete RawData;
-						}
-						Callback.ExecuteIfBound(Texture);						
-						return;
-					}
-				}
-			}
-		}
+		UTexture2D* Tex = FImageUtils::ImportBufferAsTexture2D(HttpResponse->GetContent());
+		Callback.ExecuteIfBound(Tex);		
 	}
-
-	Callback.ExecuteIfBound(nullptr);
+	else
+	{
+		Callback.ExecuteIfBound(nullptr);
+		UE_LOG(LogTap, Error, TEXT("Net error, Http success:%s."), bSucceeded ? TEXT("True") : TEXT("False"));
+	}
 }
 
 void FTapCommonModule::AsyncDownloadImage(const FString& Url, const FAsyncDownloadImage& Callback)
@@ -133,10 +102,10 @@ void FTapCommonModule::TapThrobberShowWait()
 	FTapCommonModule& Module = FModuleManager::GetModuleChecked<FTapCommonModule>("TapCommon");
 	if (!Module.TapThrobber)
 	{
-		SAssignNew(Module.TapThrobber, STapThrobber);
+		SAssignNew(Module.TapThrobber, STapThrobber).bBlock(true);
 		if (Module.TapThrobber && GEngine && GEngine->GameViewport)
 		{
-			GEngine->GameViewport->AddViewportWidgetContent(Module.TapThrobber.ToSharedRef(), MAX_int16);
+			UTapSubsystem::AddWidget(Module.TapThrobber.ToSharedRef(), MAX_int16);
 		}
 	}
 }
@@ -152,10 +121,11 @@ void FTapCommonModule::TapThrobberShowWaitAndToast(const FString& Toast)
 	else
 	{
 		SAssignNew(Module.TapThrobber, STapThrobber)
+		.bBlock(true)
 		.Content(NewContent);
 		if (Module.TapThrobber && GEngine && GEngine->GameViewport)
 		{
-			GEngine->GameViewport->AddViewportWidgetContent(Module.TapThrobber.ToSharedRef(), MAX_int16);
+			UTapSubsystem::AddWidget(Module.TapThrobber.ToSharedRef(), MAX_int16);
 		}
 	}
 }
@@ -165,7 +135,7 @@ void FTapCommonModule::TapThrobberDismiss()
 	FTapCommonModule& Module = FModuleManager::GetModuleChecked<FTapCommonModule>("TapCommon");
 	if (Module.TapThrobber && GEngine && GEngine->GameViewport)
 	{
-		GEngine->GameViewport->RemoveViewportWidgetContent(Module.TapThrobber.ToSharedRef());
+		UTapSubsystem::RemoveWidget(Module.TapThrobber.ToSharedRef());
 		Module.TapThrobber.Reset();
 	}
 }
@@ -190,7 +160,7 @@ void FTapCommonModule::TapThrobberShowToast(const FString& Toast, float TimeInte
 		.OnRemoveSelf(FOnTapThrobberRemoveSelf::CreateStatic(&FTapCommonModule::OnTapThrobberRemoveSelf));
 		if (Module.TapThrobber && GEngine && GEngine->GameViewport)
 		{
-			GEngine->GameViewport->AddViewportWidgetContent(Module.TapThrobber.ToSharedRef(), MAX_int16);
+			UTapSubsystem::AddWidget(Module.TapThrobber.ToSharedRef(), MAX_int16);
 		}
 	}
 }

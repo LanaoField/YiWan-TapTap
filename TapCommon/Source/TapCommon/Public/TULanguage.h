@@ -1,6 +1,8 @@
 #pragma once
 #include "TUType.h"
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCurrentLanguageChanged, ELanguageType/** OldType */, ELanguageType/** NewType */);
+
 class TAPCOMMON_API TULanguage {
 public:
 
@@ -12,9 +14,7 @@ public:
 	// 设置当前语言
 	static void SetCurrentType(ELanguageType Type);
 
-	// DECLARE_EVENT_OneParam(TdsLanguage, LanguageChangedEvent, ELanguageType);
-	// LanguageChangedEvent& OnLanguageChanged() { return LanguageChangedEvent; }
-
+	static FOnCurrentLanguageChanged& OnLanguageChanged(); 
 
 private:
 	static TULanguage& Get();
@@ -23,6 +23,7 @@ private:
 	TMap<FString, ELanguageType> LanguageMap;
 	void ParseLanguages();
 	ELanguageType CurrentType = ELanguageType::AUTO;
-	// LanguageChangedEvent LanguageChangedEvent;
 	
+	FOnCurrentLanguageChanged OnCurrentLanguageChanged;
 };
+

@@ -25,5 +25,6 @@ public:
 	virtual void UserUpdate(TSharedPtr<FJsonObject> Properties) override;
 	virtual void UserAdd(TSharedPtr<FJsonObject> Properties) override;
 	virtual void AdvertiserIDCollectionEnabled(bool Enable) override;
+	virtual void SetOAIDCert(const FString& Cert) override;
 	virtual void EnableLog(bool Enable) override;
 };

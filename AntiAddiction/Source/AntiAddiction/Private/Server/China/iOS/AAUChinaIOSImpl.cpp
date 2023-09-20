@@ -39,7 +39,6 @@ AAUChinaIOSImpl::~AAUChinaIOSImpl() {
 void AAUChinaIOSImpl::InitImpl(const FAAUConfig& _Config) {
 	AntiAddictionConfig *config = [[AntiAddictionConfig alloc] init];
 	config.clientID = IOSHelper::Convert(_Config.ClientID);
-	config.useTapLogin = _Config.UseTapLogin;
 	config.showSwitchAccount = _Config.ShowSwitchAccount;
 
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -47,10 +46,17 @@ void AAUChinaIOSImpl::InitImpl(const FAAUConfig& _Config) {
 	});
 }
 
-void AAUChinaIOSImpl::Startup(const FString& UserID) {
+void AAUChinaIOSImpl::Startup(const FString& UserID, bool bIsTapUser) {
 	NSString *userID = IOSHelper::Convert(UserID);
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[AntiAddiction startupWithUserID:userID];
+		[AntiAddiction startupWithUserID:userID isTapUser:bIsTapUser];
+	});
+}
+
+void AAUChinaIOSImpl::SetTestEnv(bool Enable) {
+	bTestEnvEnable = Enable;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[AntiAddiction setTestEnvironment:Enable];
 	});
 }
 

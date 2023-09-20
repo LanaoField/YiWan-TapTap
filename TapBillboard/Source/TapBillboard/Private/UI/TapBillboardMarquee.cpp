@@ -298,11 +298,19 @@ void UTapBillboardMarquee::NativeTick(const FGeometry& MyGeometry, float InDelta
 	PendingRemove.Reset();
 
 	float SizeX = ItemPanel->GetCachedGeometry().Size.X;
+#if ENGINE_MAJOR_VERSION > 4
+	if (SizeX != PlaceHolder->GetSize().X)
+#else
 	if (SizeX != PlaceHolder->Size.X)
+#endif
 	{
 		PlaceHolder->SetSize(FVector2D(SizeX, 1.f));
 	}
+#if ENGINE_MAJOR_VERSION > 4
+	if (SizeX + 100.f != PlaceHolderRight->GetSize().X)
+#else
 	if (SizeX + 100.f != PlaceHolderRight->Size.X)
+#endif
 	{
 		PlaceHolderRight->SetSize(FVector2D(SizeX + 100.f, 1.f));
 	}

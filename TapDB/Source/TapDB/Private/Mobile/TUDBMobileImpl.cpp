@@ -240,6 +240,20 @@ void TUDBMobileImpl::AdvertiserIDCollectionEnabled(bool Enable) {
 	
 }
 
+void TUDBMobileImpl::SetOAIDCert(const FString& Cert) {
+#if PLATFORM_ANDROID
+	FString JsonOutString;
+	TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonOutString);
+	Writer->WriteObjectStart();
+	Writer->WriteValue(TEXT("setOAIDCert"), Cert);
+	Writer->WriteObjectEnd();
+	Writer->Close();
+	TUMobileBridge::AsyncPerform(TAPDB_SERVICE, "setOAIDCert", JsonOutString);
+#else
+	TUDBImpl::SetOAIDCert(Cert);
+#endif
+}
+
 void TUDBMobileImpl::EnableLog(bool Enable) {
 	FString JsonOutString;
 	TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonOutString);

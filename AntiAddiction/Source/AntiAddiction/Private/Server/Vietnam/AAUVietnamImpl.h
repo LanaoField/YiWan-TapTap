@@ -12,7 +12,7 @@ public:
 	virtual void InitImpl(const FAAUConfig& _Config) override;
 	virtual void EnterGame() override;
 	virtual void LeaveGame() override;
-	virtual void Startup(const FString& UserID) override;
+	virtual void Startup(const FString& UserID, bool bIsTapUser) override;
 	virtual void Exit() override;
 	virtual EAAUAgeLimit GetAgeRange() override;
 	virtual int GetRemainingTime() override;

@@ -114,10 +114,13 @@ void TUHttpManager::request(TSharedPtr<TUHttpRequest> tdsReq)
 				}
 			}
 			TSharedPtr<TUHttpResponse> tdsRes(new TUHttpResponse);
-			tdsRes->httpCode = Response->GetResponseCode();
-			tdsRes->contentString = Response->GetContentAsString();
-			tdsRes->headers = Response->GetAllHeaders();
 			tdsRes->request = tdsReq;
+			if (Response)
+			{
+				tdsRes->httpCode = Response->GetResponseCode();
+				tdsRes->contentString = Response->GetContentAsString();
+				tdsRes->headers = Response->GetAllHeaders();
+			}
 			if (bWasSuccessful)
 			{
 				if (EHttpResponseCodes::IsOk(tdsRes->httpCode))
@@ -140,5 +143,13 @@ void TUHttpManager::request(TSharedPtr<TUHttpRequest> tdsReq)
 				tdsReq->onCompleted.ExecuteIfBound(tdsRes);
 			});
 		});
-	Request->ProcessRequest();
+	if (!Request->ProcessRequest())
+	{
+		AsyncTask(ENamedThreads::GameThread, [=]()
+		{
+			TSharedPtr<TUHttpResponse> tdsRes(new TUHttpResponse);
+			tdsRes->state = TUHttpResponse::networkError;
+			tdsReq->onCompleted.ExecuteIfBound(tdsRes);
+		});
+	}
 }

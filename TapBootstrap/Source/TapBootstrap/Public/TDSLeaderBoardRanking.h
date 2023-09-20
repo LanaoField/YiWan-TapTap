@@ -9,9 +9,7 @@ public:
 	int StatisticValue = 0;
 	int Rank = 0;
 	TSharedPtr<FTDSUser> User = nullptr;
-
-#if PLATFORM_IOS || PLATFORM_ANDROID
-
+	
 	/**
 	 * @brief TapTap 好友排行榜列表
 	 * @param Name 排行榜名称，e.g: "world"
@@ -21,7 +19,5 @@ public:
 	 * @param OnError 请求失败
 	 */
 	static void QueryTapFriendsLeaderBoard(const FString& Name, int From, int Limit, FRankingsDelegate OnSuccess, FTUError::FDelegate OnError);
-#endif
-
 
 };

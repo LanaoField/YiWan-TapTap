@@ -94,6 +94,7 @@ namespace TapJNI {
 		Object GetJavaObject(int Value) const;
 		Object GetJavaObject(double Value) const;
 		Object GetStringArray(const TArray<FString>& Strings) const;
+		Object GetDataBytes(const TArray<uint8>& DataBytes) const;
 
 		Object NewObject(const Class& Class, const char* CtorSig, ...) const;
 		
