@@ -79,8 +79,7 @@ void UTapSubsystem::SetupTapWidgetScaler()
 
 void UTapSubsystem::Deinitialize()
 {
-	check(GEngine && GEngine->GameViewport);
-	if (Scaler)
+	if (Scaler.IsValid() && GEngine && GEngine->GameViewport)
 	{
 		GEngine->GameViewport->RemoveViewportWidgetContent(Scaler.ToSharedRef());
 	}
@@ -90,10 +89,14 @@ void UTapSubsystem::Deinitialize()
 
 float UTapSubsystem::CalculateTapDPI() const
 {
-	float GameScale = UWidgetLayoutLibrary::GetViewportScale(GEngine->GameViewport);
+	float GameScale = 1.0f;
 
 	FVector2D ViewportSize;
-	GEngine->GameViewport->GetViewportSize(ViewportSize);
+	if (GEngine && GEngine->GameViewport)
+	{
+		UWidgetLayoutLibrary::GetViewportScale(GEngine->GameViewport);
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
 	float DefaultScale = UISetting->GetDPIScaleBasedOnSize(FIntPoint(ViewportSize.X, ViewportSize.Y));
 	
 	return GameScale > 0.f ? DefaultScale / GameScale : 1.f;
